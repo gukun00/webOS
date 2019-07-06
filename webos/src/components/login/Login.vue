@@ -2,7 +2,7 @@
  * @Author: guk 
  * @Date: 2019-07-06 14:09:35 
  * @Last Modified by: guk
- * @Last Modified time: 2019-07-06 15:58:03
+ * @Last Modified time: 2019-07-06 16:28:14
  */
 
 <style lang="less" rel="stylesheet/less">
@@ -139,7 +139,7 @@
 import WallpaperBackground from '../public/WallpaperBackground'
 
 export default {
-  name: 'Login',
+  name: 'Login', 
   data () {
     return {
       showSignInModal: true,
