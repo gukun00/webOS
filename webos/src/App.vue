@@ -32,12 +32,31 @@ body {
 </template>
 
 <script>
-import Login from "./components/login/Login";
+import Login from "@/views/Login";
 
 export default {
   name: "App",
   components: {
     Login
+  },
+  created() {
+    //获取壁纸
+    this.getWallPapers();
+  },
+  methods: {
+    getWallPapers() {
+      let wallpaper = {};
+      let defaultSrc = "/assets/win7/wallpaper.jpg";
+      wallpaper["type"] = "images";
+      wallpaper["src"] = defaultSrc;
+      // 处理样式
+      wallpaper["style"] = {
+        background:
+          "url(" + defaultSrc + ") center center / cover no-repeat fixed"
+      };
+      // 分发mutations，更新当前的壁纸信息
+      this.$store.commit("currentWallpaper/update", wallpaper);
+    }
   }
 };
 </script>

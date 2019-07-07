@@ -1,141 +1,228 @@
+/*
+ * @Author: guk 
+ * @Date: 2019-07-06 14:09:35 
+ * @Last Modified by: mikey.zhaopeng
+ * @Last Modified time: 2019-07-07 10:58:48
+ */
+
 <template>
-  <el-form :model="loginForm" :rules="fieldRules" ref="loginForm" label-position="left" label-width="0px" class="demo-ruleForm login-container">
-    <span class="tool-bar">
-      <!-- 主题切换 -->
-      <theme-picker style="float:right;" class="theme-picker" :default="themeColor" @onThemeChange="onThemeChange"></theme-picker>
-      <!-- 语言切换 -->
-      <!-- <lang-selector class="lang-selector"></lang-selector>    -->
-    </span>
-    <h2 class="title" style="padding-left:22px;" >系统登录</h2>
-    <el-form-item prop="account">
-      <el-input type="text" v-model="loginForm.account" auto-complete="off" placeholder="账号"></el-input>
-    </el-form-item>
-    <el-form-item prop="password">
-      <el-input type="password" v-model="loginForm.password" auto-complete="off" placeholder="密码"></el-input>
-    </el-form-item>
-    <el-form-item >
-      <el-col :span="12">
-        <el-form-item prop="captcha">
-          <el-input type="test" v-model="loginForm.captcha" auto-complete="off" placeholder="验证码, 单击图片刷新"
-            style="width: 100%;">
-          </el-input>
-        </el-form-item>
-      </el-col>
-      <el-col class="line" :span="1">&nbsp;</el-col>
-      <el-col :span="11">
-        <el-form-item>
-            <img style="width: 100%;" class="pointer" :src="loginForm.src" @click="refreshCaptcha">
-        </el-form-item>
-      </el-col>
-    </el-form-item>
-    <!-- <el-checkbox v-model="checked" checked class="remember">记住密码</el-checkbox> -->
-    <el-form-item style="width:100%;">
-      <el-button type="primary" style="width:48%;" @click.native.prevent="reset">重 置</el-button>
-      <el-button type="primary" style="width:48%;" @click.native.prevent="login" :loading="loading">登 录</el-button>
-    </el-form-item>
-  </el-form>
+  <div class="app-login">
+    <div class="main-box">
+      <WallpaperBackground></WallpaperBackground>
+      <!-- <a :href="$Config.System.repository.url" target="_blank">
+        <img
+          style="position: absolute; top: -2px; right: -2px; border: 0; z-index: 5000"
+          src="https://s3.amazonaws.com/github/ribbons/forkme_right_orange_ff7600.png"
+          alt="Fork me on GitHub"
+        >
+      </a>-->
+      <div class="login-header">
+        <div class="avatar-block">
+          <img class="avatar" :src="$Config.System.logo" alt />
+        </div>
+      </div>
+      <div class="login-body">
+        <el-form class="login-form" ref="signInForm" :model="formData" :rules="signInFormRules">
+          <el-form-item class="form-item" prop="account">
+            <el-input type="text" v-model="formData.account" placeholder="请输入用户名"></el-input>
+          </el-form-item>
+          <el-form-item class="form-item" prop="password">
+            <el-input
+              :type="passwordInputType"
+              v-model="formData.password"
+              placeholder="请输入密码，回车登录"
+              @on-enter="handleSignIn"
+            >
+              <el-button
+                slot="append"
+                :icon="passwordInputType === 'password' ? 'eye-disabled' : 'eye'"
+                style="font-size: 16px; line-height: 1;"
+                @click="showPassword"
+              ></el-button>
+            </el-input>
+          </el-form-item>
+        </el-form>
+        <div class="notice-text">测试账号：admin，密码：admin</div>
+      </div>
+      <div class="login-footer">
+        <Button type="primary" size="large" long :loading="loading" @click="handleSignIn">登录</Button>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script>
-import { mapState } from 'vuex'
-import Cookies from "js-cookie"
-import ThemePicker from "@/components/ThemePicker"
-import LangSelector from "@/components/LangSelector"
+import WallpaperBackground from "@/components/public/WallpaperBackground";
+
 export default {
-  name: 'Login',
-  components:{
-    ThemePicker,
-    LangSelector
+  name: "Login",
+  components: {
+    WallpaperBackground
   },
   data() {
     return {
+      showSignInModal: true,
       loading: false,
-      loginForm: {
-        account: 'admin',
-        password: 'admin',
-        captcha:'',
-        src: ''
+      // 表单数据
+      formData: {
+        account: "",
+        password: ""
       },
-      fieldRules: {
+      signInFormRules: {
         account: [
-          { required: true, message: '请输入账号', trigger: 'blur' }
+          { required: true, message: "请填写用户名", trigger: "change" }
         ],
         password: [
-          { required: true, message: '请输入密码', trigger: 'blur' }
+          { required: true, message: "请填写密码", trigger: "change" },
+          {
+            type: "string",
+            min: 5,
+            max: 16,
+            message: "密码长度必须在5到16位之间",
+            trigger: "change"
+          }
         ]
-        // ,
-        // captcha: [
-        //   { required: true, message: '请输入验证码', trigger: 'blur' }
-        // ]
       },
-      checked: true
-    }
+      // 密码输入框类型
+      passwordInputType: "password"
+    };
   },
   methods: {
-    login() {
-      this.loading = true
-      let userInfo = {account:this.loginForm.account, password:this.loginForm.password, captcha:this.loginForm.captcha}
-      this.$api.login.login(userInfo).then((res) => {
-          if(res.msg != null) {
-            this.$message({
-              message: res.msg,
-              type: 'error'
-            })
-          } else {
-            Cookies.set('token', res.data.token) // 放置token到Cookie
-            sessionStorage.setItem('user', userInfo.account) // 保存用户到本地会话
-            this.$store.commit('menuRouteLoaded', false) // 要求重新加载导航菜单
-            this.$router.push('/')  // 登录成功，跳转到主页
+    handleSignIn: async function() {
+      let _t = this;
+      // 调用接口执行登录
+      let types = _t.$utils.store.getType("Login/doSignIn", "Platform");
+
+      let res = await _t.$store.dispatch(types, {
+        account: _t.formData.account.trim(),
+        password: _t.formData.password.trim()
+      });
+      if (!res || res.code !== "OK") {
+        return;
+      }
+      let userInfo = {
+        account: res.data.name
+      };
+      let tokenKey = _t.$Config.Cookie.getItem("token");
+      let token = res.data[tokenKey] || null;
+      if (userInfo) {
+        _t.$Message.success("登录成功！");
+        // TODO 用户信息存入state；token存入sessionStorage；路由跳转
+        _t.$store.commit(
+          _t.$utils.store.getType("userInfo/update", "Platform"),
+          {
+            ...userInfo,
+            isLogin: true
           }
-          this.loading = false
-        }).catch((res) => {
-          this.$message({
-          message: res.message,
-          type: 'error'
-          })
+        );
+        let pathKey =
+          process && process.env.NODE_ENV !== "production"
+            ? "development"
+            : "production";
+        _t.$Cookies.set(tokenKey, token, {
+          path: _t.$Config.Cookie.path[pathKey]
         });
+      } else {
+        _t.$Message.error("登录失败，接口返回数据异常！");
+      }
     },
-    refreshCaptcha: function(){
-      this.loginForm.src = this.global.baseUrl + "/captcha.jpg?t=" + new Date().getTime();
-    },
-    reset() {
-      this.$refs.loginForm.resetFields()
-    },
-    // 切换主题
-    onThemeChange: function(themeColor) {
-      this.$store.commit('setThemeColor', themeColor)
+    showPassword: function() {
+      let _t = this;
+      _t.passwordInputType =
+        _t.passwordInputType === "password" ? "text" : "password";
     }
-  },
-  mounted() {
-    this.refreshCaptcha()
-  },
-  computed:{
-    ...mapState({
-      themeColor: state=>state.app.themeColor
-    })
   }
-}
+};
 </script>
 
-<style lang="scss" scoped>
-  .login-container {
-    -webkit-border-radius: 5px;
-    border-radius: 5px;
-    -moz-border-radius: 5px;
-    background-clip: padding-box;
-    margin: 100px auto;
-    width: 350px;
-    padding: 35px 35px 15px 35px;
-    background: #fff;
-    border: 1px solid #eaeaea;
-    box-shadow: 0 0 25px #cac6c6;
-    .title {
-      margin: 0px auto 30px auto;
-      text-align: center;
-      color: #505458;
-    }
-    .remember {
-      margin: 0px 0px 35px 0px;
+<style lang="less" rel="stylesheet/less">
+.app-login {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+
+  .main-box {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 280px;
+    /*height: 250px;*/
+    margin-left: -140px;
+    margin-top: -200px;
+    box-shadow: 0 0 5px 5px rgba(0, 0, 0, 0.1);
+    background: rgba(255, 255, 255, 0.1);
+    overflow: hidden;
+
+    &:hover,
+    &:focus {
+      box-shadow: 0 0 2px 2px rgba(0, 0, 0, 0.2);
     }
   }
+
+  .login-header {
+    text-align: center;
+    background: #fff;
+    height: 129px;
+
+    .avatar-block {
+      display: inline-block;
+      width: 280px;
+      height: 120px;
+      margin: 30px auto;
+      overflow: hidden;
+
+      .avatar {
+        display: inline-block;
+        width: 280px;
+        height: 60px;
+        margin: 0px;
+        padding: 0;
+      }
+    }
+  }
+  .login-body {
+    text-align: center;
+    padding: 30px 15px;
+
+    .login-form {
+      /*width: 250px;*/
+      margin: 0 auto;
+      text-align: left;
+
+      .form-item {
+        margin: 24px auto 0;
+      }
+      input {
+        border: none;
+      }
+      .ivu-input-group-append,
+      .ivu-input-group-prepend {
+        background: #fff;
+        border: none;
+      }
+    }
+
+    .notice-text {
+      display: inline-block;
+      margin-top: 20px;
+      width: 100%;
+      color: #fff;
+      text-align: left;
+    }
+  }
+
+  .login-footer {
+    padding: 12px 15px;
+    text-align: right;
+  }
+
+  input {
+    // 解决chrome下表单自动填充导致的input框黄底问题
+    &:-webkit-autofill {
+      -webkit-box-shadow: 0 0 0px 1000px #fff inset !important;
+    }
+  }
+}
 </style>
