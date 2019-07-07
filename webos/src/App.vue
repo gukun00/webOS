@@ -1,7 +1,10 @@
-/**
-* Created by Sciyon on 2017/12/24.
-*
-*/
+/*
+ * @Author: mikey.zhaopeng 
+ * @Date: 2019-07-07 19:29:33 
+ * @Last Modified by:   mikey.zhaopeng 
+ * @Last Modified time: 2019-07-07 19:29:33 
+ */
+
 
 <style lang="less" rel="stylesheet/less">
 html {
@@ -46,7 +49,7 @@ export default {
   methods: {
     getWallPapers() {
       let wallpaper = {};
-      let defaultSrc = "/assets/win7/wallpaper.jpg";
+      let defaultSrc = "./assets/win7/wallpaper.jpg";
       wallpaper["type"] = "images";
       wallpaper["src"] = defaultSrc;
       // 处理样式

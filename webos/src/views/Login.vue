@@ -2,13 +2,13 @@
  * @Author: guk 
  * @Date: 2019-07-06 14:09:35 
  * @Last Modified by: mikey.zhaopeng
- * @Last Modified time: 2019-07-07 10:58:48
+ * @Last Modified time: 2019-07-07 19:30:52
  */
 
 <template>
   <div class="app-login">
+    <WallpaperBackground></WallpaperBackground>
     <div class="main-box">
-      <WallpaperBackground></WallpaperBackground>
       <!-- <a :href="$Config.System.repository.url" target="_blank">
         <img
           style="position: absolute; top: -2px; right: -2px; border: 0; z-index: 5000"
