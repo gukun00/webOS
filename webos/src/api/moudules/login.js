@@ -1,4 +1,5 @@
 import axios from '../axios'
+import config from '../config';
 
 /* 
  * 系统登录模块
@@ -7,7 +8,7 @@ import axios from '../axios'
 // 登录
 export const login = data => {
     return axios({
-        url: 'api/sys/login',
+        url: config.baseUrl + '/api/sys/login',
         method: 'post',
         data
     })
@@ -16,7 +17,7 @@ export const login = data => {
 // 登出
 export const logout = () => {
     return axios({
-        url: 'logout',
+        url: config.baseUrl + '/logout',
         method: 'get'
     })
 }

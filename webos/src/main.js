@@ -5,6 +5,7 @@ import 'element-ui/lib/theme-chalk/index.css';
 import * as Config from './config'
 // 导入 cookie插件
 import * as Cookies from 'js-cookie'
+import router from './router'
 
 Vue.config.productionTip = false
 
@@ -27,5 +28,6 @@ Vue.prototype.$message({
 
 new Vue({
   render: h => h(App),
+  router,
   store
 }).$mount('#app')

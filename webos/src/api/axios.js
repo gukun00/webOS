@@ -38,10 +38,10 @@ export default function $axios(options) {
           // ) {
 
           // } else {
-            // config.data = qs.stringify(config.data)
+          // config.data = qs.stringify(config.data)
           // }
         }
-
+        console.log(config)
         return config
       },
 
@@ -57,7 +57,7 @@ export default function $axios(options) {
         const errorInfo = error.response
         console.log(errorInfo)
         if (errorInfo) {
-          error = errorInfo.data  // 页面那边catch的时候就能拿到详细的错误信息,看最下边的Promise.reject
+          error = errorInfo.data // 页面那边catch的时候就能拿到详细的错误信息,看最下边的Promise.reject
           const errorStatus = errorInfo.status; // 404 403 500 ...
           router.push({
             path: `/error/${errorStatus}`

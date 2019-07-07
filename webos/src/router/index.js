@@ -8,7 +8,7 @@ Vue.use(Router)
 
 const router = new Router({
   routes: [{
-      path: '/',
+      path: '/hello',
       name: '首页',
       component: HellWorld
     },

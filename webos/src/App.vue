@@ -1,8 +1,8 @@
 /*
  * @Author: mikey.zhaopeng 
  * @Date: 2019-07-07 19:29:33 
- * @Last Modified by:   mikey.zhaopeng 
- * @Last Modified time: 2019-07-07 19:29:33 
+ * @Last Modified by: mikey.zhaopeng
+ * @Last Modified time: 2019-07-07 20:27:48
  */
 
 
@@ -30,18 +30,13 @@ body {
 
 <template>
   <transition enter-active-class="animated fadeIn" leave-active-class="animated fadeOut">
-    <Login></Login>
+    <router-view />
   </transition>
 </template>
 
 <script>
-import Login from "@/views/Login";
-
 export default {
   name: "App",
-  components: {
-    Login
-  },
   created() {
     //获取壁纸
     this.getWallPapers();

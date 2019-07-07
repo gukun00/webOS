@@ -2,7 +2,7 @@
  * @Author: guk 
  * @Date: 2019-07-06 14:09:35 
  * @Last Modified by: mikey.zhaopeng
- * @Last Modified time: 2019-07-07 19:30:52
+ * @Last Modified time: 2019-07-07 20:25:39
  */
 
 <template>
@@ -76,9 +76,9 @@ export default {
           { required: true, message: "请填写密码", trigger: "change" },
           {
             type: "string",
-            min: 5,
+            min: 4,
             max: 16,
-            message: "密码长度必须在5到16位之间",
+            message: "密码长度必须在4到16位之间",
             trigger: "change"
           }
         ]
@@ -89,42 +89,68 @@ export default {
   },
   methods: {
     handleSignIn: async function() {
-      let _t = this;
-      // 调用接口执行登录
-      let types = _t.$utils.store.getType("Login/doSignIn", "Platform");
-
-      let res = await _t.$store.dispatch(types, {
-        account: _t.formData.account.trim(),
-        password: _t.formData.password.trim()
-      });
-      if (!res || res.code !== "OK") {
-        return;
-      }
       let userInfo = {
-        account: res.data.name
+        account: this.formData.account.trim(),
+        password: this.formData.password.trim()
       };
-      let tokenKey = _t.$Config.Cookie.getItem("token");
-      let token = res.data[tokenKey] || null;
-      if (userInfo) {
-        _t.$Message.success("登录成功！");
-        // TODO 用户信息存入state；token存入sessionStorage；路由跳转
-        _t.$store.commit(
-          _t.$utils.store.getType("userInfo/update", "Platform"),
-          {
-            ...userInfo,
-            isLogin: true
+      this.$api.login
+        .login(userInfo)
+        .then(res => {
+          if (res.msg != null) {
+            this.$message({
+              message: res.msg,
+              type: "error"
+            });
+          } else {
+            this.$Cookies.set("token", res.data.token); // 放置token到Cookie
+            sessionStorage.setItem("user", userInfo.account); // 保存用户到本地会话
+            //this.$store.commit("menuRouteLoaded", false); // 要求重新加载导航菜单
+            this.$router.push({ name: "首页" }); // 登录成功，跳转到主页
           }
-        );
-        let pathKey =
-          process && process.env.NODE_ENV !== "production"
-            ? "development"
-            : "production";
-        _t.$Cookies.set(tokenKey, token, {
-          path: _t.$Config.Cookie.path[pathKey]
+          this.loading = false;
+        })
+        .catch(res => {
+          this.$message({
+            message: res.message,
+            type: "error"
+          });
         });
-      } else {
-        _t.$Message.error("登录失败，接口返回数据异常！");
-      }
+      // let _t = this;
+      // // 调用接口执行登录
+      // let types = _t.$utils.store.getType("Login/doSignIn", "Platform");
+
+      // let res = await _t.$store.dispatch(types, {
+      //   account: _t.formData.account.trim(),
+      //   password: _t.formData.password.trim()
+      // });
+      // if (!res || res.code !== "OK") {
+      //   return;
+      // }
+      // let userInfo = {
+      //   account: res.data.name
+      // };
+      // let tokenKey = _t.$Config.Cookie.getItem("token");
+      // let token = res.data[tokenKey] || null;
+      // if (userInfo) {
+      //   _t.$Message.success("登录成功！");
+      //   // TODO 用户信息存入state；token存入sessionStorage；路由跳转
+      //   _t.$store.commit(
+      //     _t.$utils.store.getType("userInfo/update", "Platform"),
+      //     {
+      //       ...userInfo,
+      //       isLogin: true
+      //     }
+      //   );
+      //   let pathKey =
+      //     process && process.env.NODE_ENV !== "production"
+      //       ? "development"
+      //       : "production";
+      //   _t.$Cookies.set(tokenKey, token, {
+      //     path: _t.$Config.Cookie.path[pathKey]
+      //   });
+      // } else {
+      //   _t.$Message.error("登录失败，接口返回数据异常！");
+      // }
     },
     showPassword: function() {
       let _t = this;
