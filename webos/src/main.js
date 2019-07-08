@@ -2,19 +2,16 @@ import Vue from 'vue'
 import App from './App.vue'
 import ElementUI from 'element-ui';
 import 'element-ui/lib/theme-chalk/index.css';
-import * as Config from './config'
 // 导入 cookie插件
 import * as Cookies from 'js-cookie'
 import router from './router'
-
+import '../public/assets/antd-iconfont/iconfont.css'
+import '../public/assets/sciyon-iconfont/iconfont.css'
 Vue.config.productionTip = false
 
 // 注册全局 Cookies
 Vue.prototype.$Cookies = Cookies
 // 注册全局 utils
-//Vue.prototype.$utils = utils
-// 注册全局 config
-Vue.prototype.$Config = Config
 import api from './api'
 import store from './store'
 

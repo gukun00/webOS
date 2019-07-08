@@ -1,8 +1,8 @@
 /*
  * @Author: guk 
  * @Date: 2019-07-06 14:09:35 
- * @Last Modified by: mikey.zhaopeng
- * @Last Modified time: 2019-07-07 20:25:39
+ * @Last Modified by: guk
+ * @Last Modified time: 2019-07-08 17:44:39
  */
 
 <template>
@@ -18,7 +18,7 @@
       </a>-->
       <div class="login-header">
         <div class="avatar-block">
-          <img class="avatar" :src="$Config.System.logo" alt />
+          <img class="avatar" :src="logo" alt />
         </div>
       </div>
       <div class="login-body">
@@ -35,7 +35,7 @@
             >
               <el-button
                 slot="append"
-                :icon="passwordInputType === 'password' ? 'eye-disabled' : 'eye'"
+                :icon="passwordInputType === 'password' ? 'icon iconfont icon-xianshimima' : 'icon iconfont icon-yincangmima'"
                 style="font-size: 16px; line-height: 1;"
                 @click="showPassword"
               ></el-button>
@@ -45,7 +45,7 @@
         <div class="notice-text">测试账号：admin，密码：admin</div>
       </div>
       <div class="login-footer">
-        <Button type="primary" size="large" long :loading="loading" @click="handleSignIn">登录</Button>
+        <el-button type="primary" size="large" long :loading="loading" @click="handleSignIn">登录</el-button>
       </div>
     </div>
   </div>
@@ -53,6 +53,7 @@
 
 <script>
 import WallpaperBackground from "@/components/public/WallpaperBackground";
+import {System} from "../api/config"
 
 export default {
   name: "Login",
@@ -61,6 +62,7 @@ export default {
   },
   data() {
     return {
+      logo : System.logo,
       showSignInModal: true,
       loading: false,
       // 表单数据

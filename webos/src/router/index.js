@@ -2,7 +2,7 @@ import Vue from 'vue'
 import Router from 'vue-router'
 import Login from '@/views/Login'
 import NotFound from '@/views/Error/404'
-import HellWorld from '@/components/HelloWorld'
+import Desktop from '../views/platform/Desktop'
 
 Vue.use(Router)
 
@@ -10,7 +10,7 @@ const router = new Router({
   routes: [{
       path: '/',
       name: '首页',
-      component: HellWorld
+      component: Desktop
     },
     {
       path: '/login',

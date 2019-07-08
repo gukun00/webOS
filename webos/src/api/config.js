@@ -1,6 +1,23 @@
 
 import { baseUrl } from '@/utils/global'
 
+
+// 系统配置
+export const System = {
+  author: 'SCIYON',
+  repository: {
+    type: 'github',
+    url: 'http://www.sciyon.com'
+  },
+  version: '3.0.1',
+  name: 'EmpowerX',
+  title: 'EmpowerX',
+  subtitle: 'EmpowerX',
+  logo: './logo_empowerx.png',
+  copyright: '© 2018 - 2019 SCIYON'
+}
+
+
 export default {
   method: 'get',
   // 基础url前缀
@@ -16,5 +33,6 @@ export default {
   // 携带凭证
   withCredentials: true,
   // 返回数据类型
-  responseType: 'json'
+  responseType: 'json',
+  System
 }
