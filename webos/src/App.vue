@@ -1,8 +1,8 @@
 /*
  * @Author: mikey.zhaopeng 
  * @Date: 2019-07-07 19:29:33 
- * @Last Modified by: mikey.zhaopeng
- * @Last Modified time: 2019-07-07 20:27:48
+ * @Last Modified by: guk
+ * @Last Modified time: 2019-07-09 19:44:48
  */
 
 
@@ -14,6 +14,9 @@ html {
   padding: 0;
 }
 body {
+  font-size: 12px;
+  line-height: 1.5;
+  color: #515a6e;
   height: 100%;
   width: 100%;
   margin: 0;

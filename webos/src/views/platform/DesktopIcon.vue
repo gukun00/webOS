@@ -2,7 +2,7 @@
  * @Author: guk 
  * @Date: 2019-07-08 15:24:23 
  * @Last Modified by: guk
- * @Last Modified time: 2019-07-08 15:24:51
+ * @Last Modified time: 2019-07-09 16:54:33
  * 桌面图标
  */
 
@@ -67,15 +67,11 @@
       }
     },
     computed: {
-      ...mapState('Platform/Admin', {
-        _appData: state => state._appData
-      }),
-      ...mapState('Platform', {
-        appIcon: state => state.appIcon
+      ...mapState({
+        appData: state => state.appData
       }),
       appIconBg: function () {
-        let _t = this
-        let icon = _t.info.config.app.hasOwnProperty('icon') && _t.info.config.app.icon ? _t.info.config.app.icon : null
+        let icon = this.info.config.app.hasOwnProperty('icon') && this.info.config.app.icon ? this.info.config.app.icon : null
         if (!icon) {
           return {}
         }
@@ -87,12 +83,10 @@
     methods: {
       // 鼠标按下
       mouseDownHandle: function () {
-        let _t = this
-        _t.isMouseDown = true
+        this.isMouseDown = true
       },
       mouseUpHandle: function () {
-        let _t = this
-        _t.isMouseDown = false
+        this.isMouseDown = false
       },
       // 打开应用
       openApp: function () {
@@ -223,10 +217,10 @@
       },
       // FIXME 拖拽处理，可以考虑实现选区拖拽
       handleDragStart: function (event) {
-        let _t = this
-        // 广播事件，关闭菜单
-        _t.$utils.bus.$emit('platform/contextMenu/hide')
-        let appInfo = _t.info
+        // let _t = this
+        // // 广播事件，关闭菜单
+        // _t.$utils.bus.$emit('platform/contextMenu/hide')
+        let appInfo = this.info
         // 鼠标点击位置相对拖拽对象位置
         let offsetX = event.offsetX
         let offsetY = event.offsetY
@@ -242,7 +236,9 @@
             appInfo: appInfo
           }
         }
-        event.dataTransfer.setData('Text', JSON.stringify(targetInfo))
+
+        //分发拖拽数据，到桌面组件计算位置
+        this.$emit("icon-drag-down",targetInfo);
       }
     }
   }
@@ -294,6 +290,7 @@
         }
       }
     }
+    
     img {
       display: block;
       width: 48px;

@@ -2,7 +2,7 @@
  * @Author: guk 
  * @Date: 2019-07-08 16:38:16 
  * @Last Modified by: guk
- * @Last Modified time: 2019-07-08 17:05:42
+ * @Last Modified time: 2019-07-09 11:42:15
  * 桌面壁纸
  */
 
@@ -147,8 +147,8 @@ export default {
   },
   mounted: function() {},
   beforeDestroy: function() {
-    let _t = this;
-    _t.$utils.bus.$off(["platform/wallpaper/switch"]);
+    // let _t = this;
+    // _t.$utils.bus.$off(["platform/wallpaper/switch"]);
   }
 };
 </script>

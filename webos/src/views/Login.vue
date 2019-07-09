@@ -2,7 +2,7 @@
  * @Author: guk 
  * @Date: 2019-07-06 14:09:35 
  * @Last Modified by: guk
- * @Last Modified time: 2019-07-08 17:44:39
+ * @Last Modified time: 2019-07-08 17:57:24
  */
 
 <template>
@@ -117,42 +117,6 @@ export default {
             type: "error"
           });
         });
-      // let _t = this;
-      // // 调用接口执行登录
-      // let types = _t.$utils.store.getType("Login/doSignIn", "Platform");
-
-      // let res = await _t.$store.dispatch(types, {
-      //   account: _t.formData.account.trim(),
-      //   password: _t.formData.password.trim()
-      // });
-      // if (!res || res.code !== "OK") {
-      //   return;
-      // }
-      // let userInfo = {
-      //   account: res.data.name
-      // };
-      // let tokenKey = _t.$Config.Cookie.getItem("token");
-      // let token = res.data[tokenKey] || null;
-      // if (userInfo) {
-      //   _t.$Message.success("登录成功！");
-      //   // TODO 用户信息存入state；token存入sessionStorage；路由跳转
-      //   _t.$store.commit(
-      //     _t.$utils.store.getType("userInfo/update", "Platform"),
-      //     {
-      //       ...userInfo,
-      //       isLogin: true
-      //     }
-      //   );
-      //   let pathKey =
-      //     process && process.env.NODE_ENV !== "production"
-      //       ? "development"
-      //       : "production";
-      //   _t.$Cookies.set(tokenKey, token, {
-      //     path: _t.$Config.Cookie.path[pathKey]
-      //   });
-      // } else {
-      //   _t.$Message.error("登录失败，接口返回数据异常！");
-      // }
     },
     showPassword: function() {
       let _t = this;

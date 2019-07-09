@@ -9,13 +9,16 @@ import '../public/assets/antd-iconfont/iconfont.css'
 import '../public/assets/sciyon-iconfont/iconfont.css'
 Vue.config.productionTip = false
 
+import XDrag from './core/directives/XDrag'
+Vue.use(XDrag)
+
 // 注册全局 Cookies
 Vue.prototype.$Cookies = Cookies
 // 注册全局 utils
 import api from './api'
 import store from './store'
 
-
+Vue.use(ElementUI, { size: 'small', zIndex: 3000 });
 Vue.use(ElementUI)
 Vue.use(api)
 
