@@ -2,7 +2,7 @@
  * @Author: guk 
  * @Date: 2019-07-09 17:17:40 
  * @Last Modified by: guk
- * @Last Modified time: 2019-07-09 20:23:18
+ * @Last Modified time: 2019-07-10 16:11:36
  * 菜单项组件
  */
 
@@ -45,8 +45,8 @@ export default {
   methods: {
     // 触发菜单 FIXME 可以考虑点击时判断是否有子菜单，有子菜单则打开子菜单
     triggerMenuItem: function() {
-       this.info.action.handler();
-       this.$store.commit("toggleRightMenu",false);
+      this.info.action.handler();
+      this.$store.commit("toggleRightMenu", false);
     }
   }
 };

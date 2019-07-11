@@ -2,7 +2,7 @@
  * @Author: guk 
  * @Date: 2019-07-06 14:09:35 
  * @Last Modified by: guk
- * @Last Modified time: 2019-07-08 17:57:24
+ * @Last Modified time: 2019-07-10 14:16:45
  */
 
 <template>
@@ -53,7 +53,7 @@
 
 <script>
 import WallpaperBackground from "@/components/public/WallpaperBackground";
-import {System} from "../api/config"
+import { System } from "../api/config";
 
 export default {
   name: "Login",
@@ -62,7 +62,7 @@ export default {
   },
   data() {
     return {
-      logo : System.logo,
+      logo: System.logo,
       showSignInModal: true,
       loading: false,
       // 表单数据
@@ -106,6 +106,15 @@ export default {
           } else {
             this.$Cookies.set("token", res.data.token); // 放置token到Cookie
             sessionStorage.setItem("user", userInfo.account); // 保存用户到本地会话
+
+            this.$store.commit(
+              "setUserInfo",
+              {
+                ...userInfo,
+                isLogin: true
+              }
+            );
+
             //this.$store.commit("menuRouteLoaded", false); // 要求重新加载导航菜单
             this.$router.push({ name: "首页" }); // 登录成功，跳转到主页
           }

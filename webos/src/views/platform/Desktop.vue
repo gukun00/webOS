@@ -2,7 +2,7 @@
  * @Author: guk 
  * @Date: 2019-07-08 10:45:24 
  * @Last Modified by: guk
- * @Last Modified time: 2019-07-09 20:24:23
+ * @Last Modified time: 2019-07-11 09:44:58
  * 这是桌面
  */
 
@@ -22,14 +22,19 @@
         :style="item.config.desktopIcon.style"
         v-on:icon-drag-down="setDragTarget"
       ></DesktopIcon>
-      <!--  <Window
+       <Window
         v-for="(item, index) in openedWindowList"
         :key="'window_' + index"
         :info="item"
-      ></Window>-->
+      ></Window>
       <Wallpaper switchType="win7" :style="{ 'z-index': 1000 }"></Wallpaper>
     </div>
     <slot></slot>
+    <TaskBar v-show="taskBarShow">
+      <StartMenu slot="StartMenu"></StartMenu>
+      <TaskBarIconBox slot="TaskBarIconBox"></TaskBarIconBox>
+      <TaskBarWidget slot="TaskBarWidget"></TaskBarWidget>
+    </TaskBar>
     <ContextMenu></ContextMenu>
   </div>
 </template>
@@ -41,16 +46,29 @@ import DesktopIcon from "./DesktopIcon";
 import { handleGridLayout } from "./js/handleDesktop";
 import ContextMenu from "../../components/public/ContextMenu";
 
+import TaskBar from "./taskbar/TaskBar";
+import StartMenu from "./taskbar/StartMenu";
+import TaskBarIconBox from "./taskbar/TaskBarIconBox";
+import TaskBarWidget from "./taskbar/TaskBarWidget";
+import Window from "./window/WinIndex"
+import * as osHelper from "./../../utils/osHelper";
+
 export default {
   name: "Desktop",
   components: {
     Wallpaper,
     DesktopIcon,
-    ContextMenu
+    ContextMenu,
+    TaskBar,
+    TaskBarIconBox,
+    StartMenu,
+    TaskBarWidget,
+    Window
   },
   props: {},
   data() {
     return {
+      taskBarShow: true,
       //拖动的对象
       dragTarget: {},
       gridArr: [],
@@ -72,7 +90,8 @@ export default {
   },
   computed: {
     ...mapState({
-      appData: state => state.platform.appData
+      appData: state => state.platform.appData,
+      desktopWindows : state=> state.winShow.desktopWindows,
     }),
     appData_installed: function() {
       //过滤得到已经安装的app
@@ -85,6 +104,10 @@ export default {
         });
       }
       return installed;
+    },
+    openedWindowList : function(){
+        let windowArr = this.desktopWindows.filter(item => item.appInfo.config.window.status === 'open')
+        return windowArr
     }
   },
   methods: {
@@ -313,15 +336,7 @@ export default {
     // 桌面左键点击
     handleLeftClick: function() {
       this.$store.commit("toggleRightMenu", false);
-    },
-    isFullScreen() {
-      return (
-        document.fullscreenElement ||
-        document.msFullscreenElement ||
-        document.mozFullScreenElement ||
-        document.webkitFullscreenElement ||
-        false
-      );
+      this.$store.commit("toggleStartMenuShow", false);
     },
     // 桌面右键点击
     handleRightClick: function(event) {
@@ -354,12 +369,12 @@ export default {
               style: ""
             },
             style: {
-              display: this.isFullScreen() ? "none" : ""
+              display: osHelper.isFullScreen() ? "none" : ""
             },
             text: "全屏",
             enable: true,
             action: {
-              handler: this.fullScreen
+              handler: osHelper.fullScreen
             }
           },
           {
@@ -369,47 +384,33 @@ export default {
               style: ""
             },
             style: {
-              display: this.isFullScreen() ? "" : "none"
+              display: osHelper.isFullScreen() ? "" : "none"
             },
             text: "取消全屏",
             enable: true,
             action: {
-              handler: this.exitFullScreen
+              handler: osHelper.exitFullScreen
+            }
+          },
+          {
+            name: "changeWallpaper",
+            icon: {
+              class: "",
+              style: ""
+            },
+            style: {},
+            text: "更换壁纸",
+            enable: true,
+            action: {
+              handler: osHelper.exitFullScreen
             }
           }
         ]
       };
-
-      console.log(this.isFullScreen());
       // 广播事件
       //_t.$utils.bus.$emit('platform/contextMenu/show', contextMenuInfo)
       this.$store.commit("updateMenuItems", contextMenuInfo);
       //this.$store.commit("toggleRightMenu", true);
-    },
-    fullScreen: function() {
-      // 全屏
-      let docElm = document.documentElement;
-      // _t.isFullscreen = true;
-      if (docElm.requestFullscreen) {
-        docElm.requestFullscreen();
-      } else if (docElm.mozRequestFullScreen) {
-        docElm.mozRequestFullScreen();
-      } else if (docElm.webkitRequestFullScreen) {
-        docElm.webkitRequestFullScreen();
-      } else if (docElm.msRequestFullscreen) {
-        docElm.msRequestFullscreen();
-      }
-    },
-    exitFullScreen: function() {
-      if (document.exitFullscreen) {
-        document.exitFullscreen();
-      } else if (document.mozCancelFullScreen) {
-        document.mozCancelFullScreen();
-      } else if (document.webkitCancelFullScreen) {
-        document.webkitCancelFullScreen();
-      } else if (document.msExitFullscreen) {
-        document.msExitFullscreen();
-      }
     }
   },
   created: function() {

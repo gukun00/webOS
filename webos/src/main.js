@@ -9,7 +9,7 @@ import '../public/assets/antd-iconfont/iconfont.css'
 import '../public/assets/sciyon-iconfont/iconfont.css'
 Vue.config.productionTip = false
 
-import XDrag from './core/directives/XDrag'
+import XDrag from './global/directives/XDrag'
 Vue.use(XDrag)
 
 // 注册全局 Cookies
