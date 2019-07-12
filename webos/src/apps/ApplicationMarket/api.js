@@ -2,7 +2,7 @@
  * @Author: guk 
  * @Date: 2019-07-12 10:02:44 
  * @Last Modified by: guk
- * @Last Modified time: 2019-07-12 11:18:41
+ * @Last Modified time: 2019-07-12 15:14:49
  * 应用市场相关
  */
 
@@ -14,16 +14,16 @@ export const marketApi = {
   getCategoryList: async (data) => {
     return axios({
         url: config.baseUrl + '/api/ApplicationMarket/category/list',
-        method: 'post',
-        data
+        method: 'get',
+        params : data
     })
   },
   // 获取应用列表
   getApplicationList: async (data) => {
     return axios({
         url: config.baseUrl + '/api/ApplicationMarket/application/list',
-        method: 'post',
-        data
+        method: 'get',
+        params : data
     })
   }
 }

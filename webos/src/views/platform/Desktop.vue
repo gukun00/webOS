@@ -2,7 +2,7 @@
  * @Author: guk 
  * @Date: 2019-07-08 10:45:24 
  * @Last Modified by: guk
- * @Last Modified time: 2019-07-12 14:53:46
+ * @Last Modified time: 2019-07-12 15:45:17
  * 这是桌面
  */
 
@@ -268,7 +268,7 @@ export default {
         left: targetGrid.leftTop.x + "px",
         top: targetGrid.leftTop.y + "px"
       };
-      this.$store.commit("updateOneAppData", {
+      this.$store.commit("updateOneAppIconStyle", {
         info: appInfo,
         style: style
       });

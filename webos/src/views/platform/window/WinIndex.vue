@@ -2,7 +2,7 @@
  * @Author: guk 
  * @Date: 2019-07-10 17:44:46 
  * @Last Modified by: guk
- * @Last Modified time: 2019-07-12 15:02:10
+ * @Last Modified time: 2019-07-12 17:54:52
  * 
  */
 
@@ -12,8 +12,8 @@
     class="app-window"
     :class="windowSizeClass"
     @mousedown.stop="onWindowMouseDown"
-    :window-name="appInfo.appName || appInfo.config.app.name"
-    :style="appInfo.config.window.style"
+    :window-name="info.appInfo.appName || info.appInfo.config.app.name"
+    :style="info.window.style"
     v-x-drag="dragResizeConfig"
   >
     <!-- 拖拽缩放 -->
@@ -36,13 +36,13 @@
         @mousedown.stop="onWindowMouseDown"
         @dblclick.stop.prevent="handleWindowSize(info.config.window.size === 'max' ? 'reset' : 'max')"
       >
-        {{ appInfo.hasOwnProperty('action') ? (appInfo.action === 'install' ? '安装：' : (appInfo.action === 'uninstall' ? '卸载：' : '')) : '' }}
-        {{ appInfo.appTitle || appInfo.config.app.title }}
+        {{ info.appInfo.hasOwnProperty('action') ? (info.appInfo.action === 'install' ? '安装：' : (info.appInfo.action === 'uninstall' ? '卸载：' : '')) : '' }}
+        {{ info.appInfo.appTitle || info.appInfo.config.app.title }}
       </div>
       <div class="window-bar">
         <!-- 最小化 -->
         <div
-          v-if="appInfo.config.window.enableResize.includes('min')"
+          v-if="info.window.enableResize.includes('min')"
           class="window-bar-item"
           @mousedown.stop
           @mousemove.stop
@@ -54,7 +54,7 @@
         </div>
         <!-- 最大化 -->
         <div
-          v-if="appInfo.config.window.enableResize.includes('max') && appInfo.config.window.size !== 'max'"
+          v-if="info.window.enableResize.includes('max') && info.window.size !== 'max'"
           class="window-bar-item"
           @mousedown.stop
           @mousemove.stop
@@ -66,7 +66,7 @@
         </div>
         <!-- 还原 -->
         <div
-          v-if="appInfo.config.window.enableResize.includes('reset') && appInfo.config.window.size === 'max'"
+          v-if="info.window.enableResize.includes('reset') && info.window.size === 'max'"
           class="window-bar-item"
           @mousedown.stop
           @mousemove.stop
@@ -87,7 +87,7 @@
         </div>
         <!-- 关闭 -->
         <div
-          v-if="appInfo.config.window.enableResize.includes('close')"
+          v-if="info.window.enableResize.includes('close')"
           class="window-bar-item"
           @mousedown.stop
           @mousemove.stop
@@ -114,25 +114,28 @@
         </div>
         <!-- 还原 -->
         <div class="window-bar-item" @mousedown.stop @mousemove.stop @mouseup.stop>
-          <i class="icon iconfont icon-fullscreen-exit" @click.stop.prevent="exitFullScreen('reset')" ></i>
+          <i
+            class="icon iconfont icon-fullscreen-exit"
+            @click.stop.prevent="exitFullScreen('reset')"
+          ></i>
         </div>
         <!-- 退出全屏 -->
         <div class="window-bar-item" @mousedown.stop @mousemove.stop @mouseup.stop>
-          <i class="icon iconfont icon-shrink" @click.stop.prevent="exitFullScreen('restore')" ></i>
+          <i class="icon iconfont icon-shrink" @click.stop.prevent="exitFullScreen('restore')"></i>
         </div>
         <!-- 关闭 -->
         <div class="window-bar-item" @mousedown.stop @mousemove.stop @mouseup.stop>
-          <i class="icon iconfont icon-close" @click.stop.prevent="exitFullScreen('close')" ></i>
+          <i class="icon iconfont icon-close" @click.stop.prevent="exitFullScreen('close')"></i>
         </div>
       </div>
 
       <WinModal
-        v-if="appInfo.config.window.type && appInfo.config.window.type === 'modal'"
-        :info="appInfo"
+        v-if="info.window.type && info.window.type === 'modal'"
+        :info="info"
       ></WinModal>
       <WinIFrame
-        v-if="appInfo.config.window.type && appInfo.config.window.type === 'iframe'"
-        :info="appInfo"
+        v-if="info.window.type && info.window.type === 'iframe'"
+        :info="info"
       ></WinIFrame>
     </div>
   </div>
@@ -143,6 +146,8 @@ import { mapState } from "vuex";
 import WinIFrame from "./WinIFrame.vue";
 import WinModal from "./WinModal.vue";
 import WallpaperBackground from "@/components/public/WallpaperBackground";
+
+import { handleResizeByWindowBar } from "../js/handleWindowSize";
 export default {
   name: "Window",
   components: {
@@ -225,38 +230,6 @@ export default {
           };
         }
       },
-      // 通过行内样式控制
-      windowStyleBySize: {
-        small: {
-          width: "300px",
-          height: "200px",
-          left: "calc(50% - 150px)",
-          top: "calc(50% - 100px)"
-          //            ,
-          //            'margin-left': '-150px',
-          //            'margin-top': '-100px'
-        },
-        middle: {
-          width: "800px",
-          height: "600px",
-          left: "calc(50% - 400px)",
-          top: "calc(50% - 300px)"
-          //            ,
-          //            'margin-left': '-400px',
-          //            'margin-top': '-300px'
-        },
-        max: {
-          left: 0,
-          top: 0,
-          right: 0,
-          bottom: "42px"
-        },
-        min: {
-          width: 0,
-          height: 0,
-          top: "100%"
-        }
-      },
       splitScreen: {
         enable: false,
         // 分屏模式
@@ -272,7 +245,7 @@ export default {
   computed: {
     windowSizeClass: function() {
       let tmpClassName = "";
-      switch (this.appInfo.config.window.size) {
+      switch (this.info.window.size) {
         case "custom":
           tmpClassName = "app-window-custom";
           break;
@@ -294,20 +267,21 @@ export default {
     // 拖拽缩放配置
     dragResizeConfig: function() {
       return this.handleDragResizeConfig();
-    },
-    appInfo() {
-      return this.info ? this.info.appInfo : null;
     }
+    // ,
+    // appInfo() {
+    //   return this.info ? this.info.appInfo : null;
+    // }
   },
   created() {},
   methods: {
     // 处理窗口拖拽缩放配置
     handleDragResizeConfig: function() {
       // 当前应用的拖拽缩放配置
-      let appDragResizeConfig = this.appInfo.config.window.hasOwnProperty(
+      let appDragResizeConfig = this.info.window.hasOwnProperty(
         "dragResizeConfig"
       )
-        ? this.appInfo.config.window.dragResizeConfig
+        ? this.info.window.dragResizeConfig
         : {};
       // 合并配置，遇到对象则合并，其他覆盖
       let handler = function(source, target) {
@@ -358,22 +332,14 @@ export default {
     },
     // 处理弹窗状态
     handleWindowSize: function(actionName = "close") {
-      let appInfo = { ...this.appInfo };
-      console.log("actionName-------------------", actionName);
-      console.log("appInfo", appInfo);
       // 如果未启用相应则返回
-      if (!appInfo.config.window.enableResize.includes(actionName)) {
+      if (!this.info.window.enableResize.includes(actionName)) {
         return false;
       }
 
-      // 广播事件 触发window事件
-      this.$utils.bus.$emit("platform/window/trigger", {
-        // 通过窗口控制按钮缩放窗口
-        action: "resizeByWindowBar",
-        data: {
-          appInfo: appInfo,
-          action: actionName
-        }
+      handleResizeByWindowBar({
+        winInfo: this.info,
+        action: actionName
       });
     },
     onWindowMouseDown: function() {
@@ -420,26 +386,14 @@ export default {
       } else {
         splitScreen.enable = false;
       }
-      if (this.appInfo.config["window"]["size"] == "max") {
-        this.appInfo.config["window"]["size"] = this.appInfo.config["window"][
+      if (this.info.window["size"] == "max") {
+        this.info.window["size"] = this.info.window[
           "oldSize"
         ];
-        this.appInfo.config["window"]["style"].width = this.appInfo.config[
-          "window"
-        ]["oldStyle"].width;
-        this.appInfo.config["window"]["style"].height = this.appInfo.config[
-          "window"
-        ]["oldStyle"].height;
+        this.info.window["style"].width = this.info.window["oldStyle"].width;
+        this.info.window["style"].height = this.info.window["oldStyle"].height;
       }
       this.splitScreen = splitScreen;
-      // 广播事件 触发splitScreen显示事件
-      this.$utils.bus.$emit("platform/window/splitScreen/show", {
-        // 通过XDrag控制窗口拖拽、缩放
-        action: "splitScreen",
-        data: {
-          ...splitScreen
-        }
-      });
     },
     // 缩放中回调
     handleResizeMove: function(style, mousePosition, range) {
@@ -450,7 +404,7 @@ export default {
         mousePosition,
         range,
         style: {
-          ...this.appInfo.config["window"]["style"]
+          ...this.info.window["style"]
         }
       };
       // let minX = range.minX + range.margin
@@ -465,19 +419,10 @@ export default {
         splitScreen.enable = false;
       }
       this.splitScreen = splitScreen;
-      // 广播事件 触发splitScreen显示事件
-      this.$utils.bus.$emit("platform/window/splitScreen/show", {
-        // 通过XDrag控制窗口拖拽、缩放
-        action: "splitScreen",
-        data: {
-          ...splitScreen
-        }
-      });
     },
     // 拖拽完成回调
     handleDragResizeDone: function(style) {
       // 分发mutations，更新窗口样式
-      let appInfo = { ...this.appInfo };
       let bodyWidth = document.body.clientWidth;
       let bodyHeight = document.body.clientHeight - 40;
       let splitScreenStyle = {};
@@ -545,48 +490,55 @@ export default {
               width: bodyWidth + "px",
               height: bodyHeight + "px"
             };
-            // appInfo.config.window.size = 'max';
+            // info.window.size = 'max';
             this.handleWindowSize("max");
             return;
         }
-        // appInfo.config.window.oldSize = appInfo.config.window.size;
-        // appInfo.config.window.oldStyle = appInfo.config.window.style;
+        // info.window.oldSize = info.window.size;
+        // info.window.oldStyle = info.window.style;
       }
-      appInfo.config["window"]["style"] = {
-        ...appInfo.config["window"]["style"],
+
+      let tempStyleInfo = {
+        ...this.info.window["style"],
         ...style,
         ...splitScreenStyle
       };
-      // 广播事件 触发window事件
-      this.$utils.bus.$emit("platform/window/trigger", {
-        // 通过XDrag控制窗口拖拽、缩放
-        action: "dragResize",
-        data: {
-          appInfo: appInfo
-        }
+
+      this.$store.commit("updateWindows", {
+        info: this.info,
+        style: style
       });
 
+      // 广播事件 触发window事件
+      // this.$utils.bus.$emit("platform/window/trigger", {
+      //   // 通过XDrag控制窗口拖拽、缩放
+      //   action: "dragResize",
+      //   data: {
+      //     appInfo: appInfo
+      //   }
+      // });
+
       // 广播事件 触发splitScreen隐藏事件
-      this.$utils.bus.$emit("platform/window/splitScreen/hide");
+      //this.$utils.bus.$emit("platform/window/splitScreen/hide");
     },
     setFullSreen() {
       this.isFullscreen = true;
-      if (!this.appInfo.config.window.enableResize.includes("full")) {
-        this.appInfo.config.window.enableResize.push("full");
+      if (!this.info.window.enableResize.includes("full")) {
+        this.info.window.enableResize.push("full");
       }
       this.handleWindowSize("full");
-      // this.appInfo.config["window"]["style"] = {
-      //   ...this.appInfo.config["window"]["style"],
+      // this.info.window["style"] = {
+      //   ...this.info.window["style"],
       //   height: "100%"
       // };
-      this.$utils.bus.$emit("platform/window/taskBar/hide");
+      // this.$utils.bus.$emit("platform/window/taskBar/hide");
     },
     exitFullScreen(action) {
       this.isFullscreen = false;
       this.isExit = false;
-      this.$utils.bus.$emit("platform/window/taskBar/show");
-      if (!this.appInfo.config.window.enableResize.includes("restore")) {
-        this.appInfo.config.window.enableResize.push("restore");
+      //this.$utils.bus.$emit("platform/window/taskBar/show");
+      if (!this.info.window.enableResize.includes("restore")) {
+        this.info.window.enableResize.push("restore");
       }
       if (typeof action == "string") {
         this.handleWindowSize(action);
@@ -600,7 +552,7 @@ export default {
       console.log("showheader", evt);
     },
     hideHeader(evt) {
-      if (this.appInfo.config["window"]["size"] == "max") {
+      if (this.info.window["size"] == "max") {
         // _t.isHeadShow = false;
         console.log("hideHeader", evt);
       }
@@ -622,6 +574,7 @@ export default {
   box-shadow: 0px 0px 2px 2px rgba(0, 0, 0, 0.1);
   writing-mode: horizontal-tb;
   transition: all 0.3s ease-out;
+  z-index: 2000;
 
   &.app-window-small {
     /*
@@ -677,6 +630,7 @@ export default {
   &.app-window-drag-move {
     transition: none;
     opacity: 0.7;
+    z-index: 2000;
   }
 
   .app-window-resize {
@@ -760,9 +714,11 @@ export default {
 
     .window-title {
       text-align: left;
-      margin-left: 15px;
+      padding-left: 8px;
+      margin-left: 5px;
       cursor: default;
       color: #ffffff;
+      background-color: #4646ab;
     }
 
     .window-bar {
@@ -851,6 +807,7 @@ export default {
 .x-drag-move {
   transition: none;
   opacity: 0.7;
-  /*transform: translateZ(0);*/
+  z-index: 2000;
+  transform: translateZ(0);
 }
 </style>

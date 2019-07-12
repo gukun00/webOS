@@ -2,7 +2,7 @@
  * @Author: guk 
  * @Date: 2019-07-12 09:27:40 
  * @Last Modified by: guk
- * @Last Modified time: 2019-07-12 11:35:40
+ * @Last Modified time: 2019-07-12 15:18:34
  * 应用市场
  */
 
@@ -179,9 +179,9 @@ export default {
       }
       // 处理返回数据
       if (res.data.count && res.data.list && res.data.list.length) {
-        _t.$message.success(res.msg || "查询应用列表成功！");
+        //_t.$message.success(res.msg || "查询应用列表成功！");
       } else {
-        // _t.$message.info('暂无数据！')
+         _t.$message.info('暂无数据！')
       }
       // 更新应用列表数据
       let applicationList = res.data.list || [];
