@@ -1,21 +1,21 @@
 /*
  * @Author: guk 
  * @Date: 2019-07-10 17:47:41 
- * @Last Modified by:   guk 
- * @Last Modified time: 2019-07-10 17:47:41 
+ * @Last Modified by: guk
+ * @Last Modified time: 2019-07-12 09:58:10
  * 内置应用程序
  */
 
 <template>
   <div class="app-window-modal">
-    <div class="loading" v-show="loadStatus === 'loading'">
-      <Spin fix>
+    <div class="loading" v-loading="loadStatus === 'loading'">
+      <!-- <Spin fix>
         <Icon class="loading-icon" type="load-c" size="18"></Icon>
         <div class="loading-text">加载中...</div>
-      </Spin>
+      </Spin> -->
     </div>
     <div v-show="loadStatus === 'fail'" :class="{ 'load-complete': true, 'load-fail': loadStatus === 'fail' }">
-      <Icon type="close-circled"></Icon>
+      <!-- <Icon type="close-circled"></Icon> -->
       <div class="load-text">加载应用程序</div>
       <div class="load-text load-text-strong">{{ info.appTitle || info.config.app.title }}</div>
       <div class="load-text">失败！</div>
@@ -71,8 +71,9 @@
             } else {
               try {
                 let appComponent = () => import("@/apps/" + path + "/Index.vue");
-                console.log("前@/global/components/" + path + ".vue");
+                console.log("@/apps/" + path + "/Index.vue");
                 _t.appComponent = appComponent;
+                console.log("appComponent",appComponent)
                 isSuccess = true;
               } catch (err) {
                 isSuccess = false;
@@ -84,27 +85,27 @@
               }
             }
 
-            if (!isSuccess && _t.info.hasOwnProperty("action")) {
-              if (_t.info.action === "install") {
-                path = "Install";
-              } else if (_t.info.action === "uninstall") {
-                path = "Uninstall";
-              }
-              try {
-                let appComponent = () =>
-                  import("@/global/components/" + path + ".vue");
-                console.log("后@/global/components/" + path + ".vue");
-                _t.appComponent = appComponent;
-                isSuccess = true;
-              } catch (err) {
-                isSuccess = false;
-                console.warn(
-                  "WARNG:: LOAD",
-                  "@/global/components/" + path + ".vue",
-                  "FAIL!"
-                );
-              }
-            }
+            // if (!isSuccess && _t.info.hasOwnProperty("action")) {
+            //   if (_t.info.action === "install") {
+            //     path = "Install";
+            //   } else if (_t.info.action === "uninstall") {
+            //     path = "Uninstall";
+            //   }
+            //   try {
+            //     let appComponent = () =>
+            //       import("@/global/components/" + path + ".vue");
+            //     console.log("后@/global/components/" + path + ".vue");
+            //     _t.appComponent = appComponent;
+            //     isSuccess = true;
+            //   } catch (err) {
+            //     isSuccess = false;
+            //     console.warn(
+            //       "WARNG:: LOAD",
+            //       "@/global/components/" + path + ".vue",
+            //       "FAIL!"
+            //     );
+            //   }
+            // }
             // 更新加载状态
             _t.loadStatus = isSuccess ? "success" : "fail";
           });

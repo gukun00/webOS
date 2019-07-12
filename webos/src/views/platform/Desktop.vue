@@ -2,7 +2,7 @@
  * @Author: guk 
  * @Date: 2019-07-08 10:45:24 
  * @Last Modified by: guk
- * @Last Modified time: 2019-07-11 09:44:58
+ * @Last Modified time: 2019-07-12 14:53:46
  * 这是桌面
  */
 
@@ -115,7 +115,7 @@ export default {
       let account = sessionStorage.getItem("user");
       let params = {
         account: account,
-        appCategory: 0
+        appCategory: 1
       };
       this.$api.application.getApplicationListByUserId(params).then(res => {
         if (res.code === "OK") {
@@ -353,7 +353,7 @@ export default {
           {
             name: "refresh",
             icon: {
-              class: "icon anticon icon-reload1",
+              class: "icon iconfont icon-reload",
               style: ""
             },
             text: "刷新",
@@ -365,7 +365,7 @@ export default {
           {
             name: "fullScreen",
             icon: {
-              class: "icon anticon icon-laptop",
+              class: "icon iconfont icon-fullscreen",
               style: ""
             },
             style: {
@@ -380,7 +380,7 @@ export default {
           {
             name: "cancelFullScreen",
             icon: {
-              class: "icon anticon icon-scan1",
+              class: "icon iconfont icon-fullscreen-exit",
               style: ""
             },
             style: {

@@ -2,7 +2,7 @@
  * @Author: guk 
  * @Date: 2019-07-10 17:44:46 
  * @Last Modified by: guk
- * @Last Modified time: 2019-07-11 10:03:03
+ * @Last Modified time: 2019-07-12 15:02:10
  * 
  */
 
@@ -50,7 +50,7 @@
           @click.stop.prevent="handleWindowSize('min')"
         >
           <!-- <Icon type="ios-remove" /> -->
-          <i class="icon anticon icon-minussquareo"></i>
+          <i class="icon iconfont icon-minus"></i>
         </div>
         <!-- 最大化 -->
         <div
@@ -62,7 +62,7 @@
           @click.stop.prevent="handleWindowSize('max')"
         >
           <!-- <Icon type="md-square-outline" /> -->
-          <i class="icon anticon icon-iconfontdesktop"></i>
+          <i class="icon iconfont icon-fullscreen"></i>
         </div>
         <!-- 还原 -->
         <div
@@ -73,7 +73,7 @@
           @mouseup.stop
           @click.stop.prevent="handleWindowSize('reset')"
         >
-          <i class="icon anticon icon-iconfontdesktop"></i>
+          <i class="icon iconfont icon-fullscreen-exit"></i>
         </div>
         <!-- 全屏 -->
         <div
@@ -83,7 +83,7 @@
           @mouseup.stop
           @click.stop.prevent="setFullSreen"
         >
-          <i class="icon anticon icon-iconfontdesktop"></i>
+          <i class="icon iconfont icon-arrawsalt"></i>
         </div>
         <!-- 关闭 -->
         <div
@@ -94,7 +94,7 @@
           @mouseup.stop
           @click.stop.prevent="handleWindowSize('close')"
         >
-          <i class="icon anticon icon-iconfontdesktop"></i>
+          <i class="icon iconfont icon-close"></i>
         </div>
       </div>
     </div>
@@ -110,19 +110,19 @@
       >
         <!-- 最小化 -->
         <div class="window-bar-item" @mousedown.stop @mousemove.stop @mouseup.stop>
-          <i class="icon anticon icon-iconfontdesktop" @click.stop.prevent="exitFullScreen('min')"></i>
+          <i class="icon iconfont icon-minus" @click.stop.prevent="exitFullScreen('min')"></i>
         </div>
         <!-- 还原 -->
         <div class="window-bar-item" @mousedown.stop @mousemove.stop @mouseup.stop>
-          <i class="icon anticon icon-iconfontdesktop" @click.stop.prevent="exitFullScreen('reset')" ></i>
+          <i class="icon iconfont icon-fullscreen-exit" @click.stop.prevent="exitFullScreen('reset')" ></i>
         </div>
         <!-- 退出全屏 -->
         <div class="window-bar-item" @mousedown.stop @mousemove.stop @mouseup.stop>
-          <i class="icon anticon icon-iconfontdesktop" @click.stop.prevent="exitFullScreen('restore')" ></i>
+          <i class="icon iconfont icon-shrink" @click.stop.prevent="exitFullScreen('restore')" ></i>
         </div>
         <!-- 关闭 -->
         <div class="window-bar-item" @mousedown.stop @mousemove.stop @mouseup.stop>
-          <i class="icon anticon icon-iconfontdesktop" @click.stop.prevent="exitFullScreen('close')" ></i>
+          <i class="icon iconfont icon-close" @click.stop.prevent="exitFullScreen('close')" ></i>
         </div>
       </div>
 
@@ -378,15 +378,15 @@ export default {
     },
     onWindowMouseDown: function() {
       // 广播事件 触发window事件
-      let appInfo = { ...this.appInfo };
-      console.log(this.appInfo);
-      this.$utils.bus.$emit("platform/window/trigger", {
-        // 通过窗口控制按钮缩放窗口
-        action: "zIndexChangeByWindow",
-        data: {
-          appInfo: appInfo
-        }
-      });
+      // let appInfo = { ...this.appInfo };
+      // console.log(this.appInfo);
+      // this.$utils.bus.$emit("platform/window/trigger", {
+      //   // 通过窗口控制按钮缩放窗口
+      //   action: "zIndexChangeByWindow",
+      //   data: {
+      //     appInfo: appInfo
+      //   }
+      // });
     },
     // 拖拽中回调
     handleDragMove: function(style, mousePosition, range) {

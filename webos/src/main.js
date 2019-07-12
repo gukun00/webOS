@@ -5,9 +5,17 @@ import 'element-ui/lib/theme-chalk/index.css';
 // 导入 cookie插件
 import * as Cookies from 'js-cookie'
 import router from './router'
-import '../public/assets/antd-iconfont/iconfont.css'
+
+
+// 注册全局组件
+import globalComponents from './global/components'
+globalComponents.register(Vue)
+
+//import '../public/assets/antd-iconfont/iconfont.css'
+import '../public/assets/global-iconfont/iconfont.css'
 import '../public/assets/sciyon-iconfont/iconfont.css'
 Vue.config.productionTip = false
+
 
 import XDrag from './global/directives/XDrag'
 Vue.use(XDrag)

@@ -2,7 +2,7 @@
  * @Author: guk 
  * @Date: 2019-07-10 10:56:19 
  * @Last Modified by: guk
- * @Last Modified time: 2019-07-10 14:22:40
+ * @Last Modified time: 2019-07-12 10:11:42
  * 开始菜单
  */
 
@@ -95,7 +95,7 @@
 
 <script>
 import { mapState } from "vuex";
-import { System } from "@/api/config";
+import { System } from "@/utils/config";
 import WallpaperBackground from "../../../components/public/WallpaperBackground";
 
 export default {

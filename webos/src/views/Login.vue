@@ -2,7 +2,7 @@
  * @Author: guk 
  * @Date: 2019-07-06 14:09:35 
  * @Last Modified by: guk
- * @Last Modified time: 2019-07-10 14:16:45
+ * @Last Modified time: 2019-07-12 10:10:40
  */
 
 <template>
@@ -53,7 +53,7 @@
 
 <script>
 import WallpaperBackground from "@/components/public/WallpaperBackground";
-import { System } from "../api/config";
+import { System } from "@/utils/config";
 
 export default {
   name: "Login",
