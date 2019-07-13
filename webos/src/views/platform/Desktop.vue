@@ -2,7 +2,7 @@
  * @Author: guk 
  * @Date: 2019-07-08 10:45:24 
  * @Last Modified by: guk
- * @Last Modified time: 2019-07-12 15:45:17
+ * @Last Modified time: 2019-07-13 14:04:34
  * 这是桌面
  */
 
@@ -106,7 +106,7 @@ export default {
       return installed;
     },
     openedWindowList : function(){
-        let windowArr = this.desktopWindows.filter(item => item.appInfo.config.window.status === 'open')
+        let windowArr = this.desktopWindows.filter(item => item.window.status === 'open')
         return windowArr
     }
   },

@@ -15,146 +15,102 @@ var windowStyleBySize = {
         left: 0,
         top: 0,
         right: 0,
-        bottom: "42px"
+        bottom: "42px",
+        width: "",
+        height: "",
     },
     min: {
         width: 0,
         height: 0,
         top: "100%"
-    }
+    },
+    full: {
+        left: 0,
+        top: 0,
+        right: 0,
+        bottom: "42px",
+        width: "",
+        height: "",
+    },
 }
 
 
-export function handleResizeByWindowBar(data) {
-    let {
-        appInfo,
-        action,
-        appData
-    } = data
+export function handleResizeByWindowBar(data, callback) {
+
+    let winInfo = data.winInfo;
+    let appInfo = data.winInfo.appInfo;
+    let action = data.action;
+
     if (!Object.keys(appInfo).length || !appInfo.config.window) {
         return
     }
-    console.log(action);
-    // 回调操作
-    let callback = null
 
-    let currentStyle = JSON.parse(JSON.stringify(appInfo.config['window']['style'] || {}))
-    let currentSize = appInfo.config['window']['size']
-    let oldStyle = JSON.parse(JSON.stringify(appInfo.config['window']['oldStyle'] || {}))
-    let oldSize = appInfo.config['window']['oldSize']
+    let currentStyle = JSON.parse(JSON.stringify(winInfo.window['style'] || {}))
+    let currentSize = winInfo.window['size']
+    let oldStyle = JSON.parse(JSON.stringify(winInfo.window['oldStyle'] || {}))
+    let oldSize = winInfo.window['oldSize']
     //需要改变的
-    var tempAppInfo = JSON.parse(JSON.stringify(appInfo));
+    var tempWindow = JSON.parse(JSON.stringify(winInfo.window));
 
     switch (action) {
         case 'min':
             // 备份旧style/size
-            tempAppInfo.config['window']['oldStyle'] = currentStyle
-            tempAppInfo.config['window']['oldSize'] = currentSize
+            //最小化的时候不用存style
+            //tempWindow['oldStyle'] = currentStyle
+            tempWindow['oldSize'] = currentSize
             // 将当前窗口最小化
-            tempAppInfo.config['window']['style'] = windowStyleBySize['min']
-            tempAppInfo.config['window']['size'] = 'min'
-            //TODO taskBar处理
-            //let taskBarList = findAllIndex(appData, (item) => item.config.window.status === 'open' || item.config.taskBar.isPinned)
-            // if (taskBarList.length) {
-            //     let taskBarIndex = taskBarList.indexOf(currentAppIndex)
-            //     // FIXME 每个任务栏图标实际宽度 62px
-            //     tempAppInfo.config['window']['style'] = {
-            //         ...tempAppInfo.config['window']['style'],
-            //         left: 62 * (taskBarIndex + 1) + 'px'
-            //     }
-            // }
+            tempWindow['style'] = windowStyleBySize['min']
+            tempWindow['size'] = 'min'
             break
         case 'reset':
-            // 备份旧style/size
-            // 还原窗口旧样式
-            if (oldSize === 'max') {
-                tempAppInfo.config['window']['style'] = appInfo.config['window']['style'] || {}
-                tempAppInfo.config['window']['size'] = appInfo.config['window']['size']
-                tempAppInfo.config['window']['style'] = {
-                    "z-index": 2000,
-                    ...JSON.parse(JSON.stringify(tempAppInfo.config['window']['style'])),
-                    ...windowStyleBySize[tempAppInfo.config['window']['size']]
-                }
-            } else {
-                tempAppInfo.config['window']['style'] = oldStyle
-                tempAppInfo.config['window']['size'] = oldSize
-            }
-            // 备份旧style/size
-            if (currentSize != "max") {
-                tempAppInfo.config['window']['oldStyle'] = currentStyle
-                tempAppInfo.config['window']['oldSize'] = currentSize
-            }
+            // 又max回来了
+            tempWindow['oldSize'] = currentSize
+            tempWindow['size'] =  appInfo.config['window']['size'];
+            tempWindow['style'] = tempWindow['customStyle']
             break
         case 'max':
             // 备份旧style/size
-            tempAppInfo.config['window']['oldStyle'] = currentStyle
-            tempAppInfo.config['window']['oldSize'] = currentSize
+            //最大化的时候存一下当前尺寸
+            tempWindow['oldSize'] = currentSize
             // 将当前窗口最大化
-            tempAppInfo.config['window']['style'] = {
+            tempWindow['style'] = {
                 ...currentStyle,
                 ...windowStyleBySize['max']
             }
-            tempAppInfo.config['window']['size'] = 'max'
+            tempWindow['size'] = 'max'
             break
         case 'full':
             if (currentSize != "max") {
-                tempAppInfo.config['window']['size'] = 'max'
+                tempWindow['size'] = 'max'
                 //备份样式
-                tempAppInfo.config['window']['oldStyle'] = currentStyle
-                tempAppInfo.config['window']['oldSize'] = currentSize
+                tempWindow['oldSize'] = currentSize
             }
             // 将当前窗口最大化
-            tempAppInfo.config['window']['style'] = {
+            tempWindow['style'] = {
                 ...currentStyle,
                 ...windowStyleBySize['full']
             }
             break
         case 'restore':
             // 当前窗口退出最大化
-            tempAppInfo.config['window']['style'] = {
+            tempWindow['style'] = {
                 ...currentStyle,
                 ...windowStyleBySize['max']
             }
-            // tempAppInfo.config['window']['size'] = 'max'
+            // tempWindow['size'] = 'max'
             break
         case 'close':
             // 如果是安装/卸载窗口的关闭操作则从appData中移除
-            if (tempAppInfo.hasOwnProperty('action') && ['install', 'uninstall'].includes(tempAppInfo.action)) {
-                if (tempAppInfo.hasOwnProperty('installed') && tempAppInfo.installed) {
-                    //appData = appData.map(item => {
-                    //if (item.config.app.name === appInfo.config.app.name) {
-                    delete tempAppInfo.action
-                    delete tempAppInfo.installed
-                    // let _itemIndex = findAppIndex(_t._appData.appData, (item) => item.config.app.name === appInfo.config.app.name)
-                    // let _item = _t._appData.appData[_itemIndex]
-                    // tempAppInfo.config.window = {
-                    //     ..._item.config.window
-                    // }
-                    //}
-                    //return item
-                    //})
-                } else {
-                    //appData = appData.filter(item => item.config.app.name !== appInfo.config.app.name)
-                }
-            } else {
-                tempAppInfo.config['window']['status'] = 'close'
-                // 初始化size/style
-                // tempAppInfo.config['window']['style'] = _t._appData.tempAppInfo ? _t._appData.tempAppInfo.config['window']['style'] : {}
-                // tempAppInfo.config['window']['size'] = _t._appData.tempAppInfo ? _t._appData.tempAppInfo.config['window']['size'] : ''
-                tempAppInfo.config['window']['oldStyle'] = {}
-                tempAppInfo.config['window']['oldSize'] = ''
-            }
-            // let index = findAppIndex(_t.appData.taskappData, (item) => item.config.app.name === appInfo.config.app.name)
-            // if (index >= 0) {
-            //   _t.appData.taskappData.splice(index, 1);
-            // }
-           // _t.appData.taskappData = _t.appData.taskappData.filter(item => item.config.app.name !== appInfo.config.app.name)
+            tempWindow['status'] = 'close'
+            // tempWindow['size'] = appInfo.config.window.size;
+            // tempWindow['style'] = appInfo.config.window.style;
+            // tempWindow['oldStyle'] = appInfo.config.window.style;
+            // tempWindow['oldSize'] = appInfo.config.window.size;
+
             break
     }
 
-    this.$store.commit("updateOneAppStyle", {
-        ..._t.appData,
-        appData: appData
+    callback && callback({
+        window: tempWindow
     })
-    callback && callback()
 }

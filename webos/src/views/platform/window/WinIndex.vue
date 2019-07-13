@@ -2,7 +2,7 @@
  * @Author: guk 
  * @Date: 2019-07-10 17:44:46 
  * @Last Modified by: guk
- * @Last Modified time: 2019-07-12 17:54:52
+ * @Last Modified time: 2019-07-13 15:45:09
  * 
  */
 
@@ -129,14 +129,8 @@
         </div>
       </div>
 
-      <WinModal
-        v-if="info.window.type && info.window.type === 'modal'"
-        :info="info"
-      ></WinModal>
-      <WinIFrame
-        v-if="info.window.type && info.window.type === 'iframe'"
-        :info="info"
-      ></WinIFrame>
+      <WinModal v-if="info.window.type && info.window.type === 'modal'" :info="info"></WinModal>
+      <WinIFrame v-if="info.window.type && info.window.type === 'iframe'" :info="info"></WinIFrame>
     </div>
   </div>
 </template>
@@ -316,6 +310,15 @@ export default {
         return source;
       };
       let tmpObj = handler(this.defDragResizeConfig, appDragResizeConfig);
+      if (this.info.window.size === "max") {
+        //最大化的时候不能移动不能drag
+        tmpObj.drag.enable = false;
+        tmpObj.resize.enable = false;
+      } else {
+        tmpObj.drag.enable = true;
+        tmpObj.resize.enable = true;
+      }
+      console.log(tmpObj, "tmpObj");
       return tmpObj;
     },
     // 处理缩放handler
@@ -328,6 +331,7 @@ export default {
       ) {
         flag = !!this.dragResizeConfig.resize.handler[direction];
       }
+      //flag = false;
       return flag;
     },
     // 处理弹窗状态
@@ -337,10 +341,18 @@ export default {
         return false;
       }
 
-      handleResizeByWindowBar({
-        winInfo: this.info,
-        action: actionName
-      });
+      handleResizeByWindowBar(
+        {
+          winInfo: this.info,
+          action: actionName
+        },
+        data => {
+          this.$store.commit("updateOneWindow", {
+            key: this.info.key,
+            window: data.window
+          });
+        }
+      );
     },
     onWindowMouseDown: function() {
       // 广播事件 触发window事件
@@ -385,13 +397,6 @@ export default {
         isFullscreen = true;
       } else {
         splitScreen.enable = false;
-      }
-      if (this.info.window["size"] == "max") {
-        this.info.window["size"] = this.info.window[
-          "oldSize"
-        ];
-        this.info.window["style"].width = this.info.window["oldStyle"].width;
-        this.info.window["style"].height = this.info.window["oldStyle"].height;
       }
       this.splitScreen = splitScreen;
     },
@@ -504,9 +509,9 @@ export default {
         ...splitScreenStyle
       };
 
-      this.$store.commit("updateWindows", {
+      this.$store.commit("updateOneWindowStyle", {
         info: this.info,
-        style: style
+        style: tempStyleInfo
       });
 
       // 广播事件 触发window事件

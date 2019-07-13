@@ -122,7 +122,9 @@ XDrag.install = function (Vue) {
             }
             // 绑定事件
             bar.onmousedown = function (event) {
-
+              if(!config.drag.enable){
+                return;
+              }
               setIframesEvents("none");
               if (event.stopPropagation) {
                 event.stopPropagation()
@@ -146,10 +148,14 @@ XDrag.install = function (Vue) {
               }
               // 绑定mousemove事件
               document.onmousemove = function (event) {
+                if(!config.drag.enable){
+                  return;
+                }
+
                 if (dragInfo.start.x == event.clientX && dragInfo.start.y == event.clientY) {
                   return;
                 }
-                console.log('onmousemove------drag')
+
                 if (event.stopPropagation) {
                   event.stopPropagation()
                 }
@@ -201,6 +207,9 @@ XDrag.install = function (Vue) {
               }
               // 绑定mouseup事件
               document.onmouseup = function (event) {
+                if(!config.drag.enable){
+                  return;
+                }
                 if (event.stopPropagation) {
                   event.stopPropagation()
                 }
