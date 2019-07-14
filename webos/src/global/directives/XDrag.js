@@ -100,10 +100,10 @@ XDrag.install = function (Vue) {
       }
 
       let config = binding.value || {}
-      console.log("drap config", config);
+
       if (Object.keys(config).length) {
         // 处理拖拽
-        if (config.drag && config.drag.enable) {
+        if (config.drag) {
           // 处理 target
           let target = el
           // 处理函数
@@ -122,9 +122,11 @@ XDrag.install = function (Vue) {
             }
             // 绑定事件
             bar.onmousedown = function (event) {
-              if(!config.drag.enable){
+              if (!config.drag.enable) {
                 return;
               }
+
+              console.log(11111111111111111)
               setIframesEvents("none");
               if (event.stopPropagation) {
                 event.stopPropagation()
@@ -148,7 +150,7 @@ XDrag.install = function (Vue) {
               }
               // 绑定mousemove事件
               document.onmousemove = function (event) {
-                if(!config.drag.enable){
+                if (!dragInfo.flag) {
                   return;
                 }
 
@@ -207,9 +209,14 @@ XDrag.install = function (Vue) {
               }
               // 绑定mouseup事件
               document.onmouseup = function (event) {
-                if(!config.drag.enable){
+
+                if (!dragInfo.flag) {
+                  //清除事件
+                  setIframesEvents("all");
+                  document.onmousemove = null
                   return;
                 }
+
                 if (event.stopPropagation) {
                   event.stopPropagation()
                 }
@@ -227,7 +234,6 @@ XDrag.install = function (Vue) {
                 if (dragInfo.start.x == event.clientX && dragInfo.start.y == event.clientY) {
                   return;
                 }
-                console.log('onmousemove------drag')
 
                 if (config.drag.callback && typeof config.drag.callback.done === 'function') {
                   config.drag.callback.done(dragInfo.done)
@@ -247,7 +253,7 @@ XDrag.install = function (Vue) {
           console.log('XDrag Info:: drag not enabled!')
         }
         // 处理缩放
-        if (config.resize && config.resize.enable) {
+        if (config.resize) {
           // 处理 target
           let target = el
           if (typeof config.resize.handler === 'string') {
@@ -271,6 +277,11 @@ XDrag.install = function (Vue) {
             }
             // 绑定事件
             bar.onmousedown = function (event) {
+              console.log(config.resize.enable,"config.resize.enable")
+              if (config.resize.enable === false) {
+                //resizeInfo.flag = false;
+                return;
+              }
 
               setIframesEvents("none");
               if (event.stopPropagation) {
@@ -297,6 +308,10 @@ XDrag.install = function (Vue) {
               }
               // 绑定mousemove事件
               document.onmousemove = function (event) {
+                if (resizeInfo.flag === false) {
+                  return;
+                }
+
                 if (event.stopPropagation) {
                   event.stopPropagation()
                 }
@@ -306,7 +321,7 @@ XDrag.install = function (Vue) {
                 if (resizeInfo.start.x == event.clientX && resizeInfo.start.y == event.clientY) {
                   return;
                 }
-                console.log('onmousemove------resize')
+
                 if (resizeInfo.flag) {
                   // 鼠标位置
                   let mousePosition = {
@@ -404,6 +419,13 @@ XDrag.install = function (Vue) {
               }
               // 绑定mouseup事件
               document.onmouseup = function (event) {
+                if (resizeInfo.flag === false) {
+                  //清除事件
+                  document.onmousemove = null
+                  setIframesEvents("all");
+                  return;
+                }
+
                 if (event.stopPropagation) {
                   event.stopPropagation()
                 }
@@ -420,7 +442,7 @@ XDrag.install = function (Vue) {
                 if (resizeInfo.start.x == event.clientX && resizeInfo.start.y == event.clientY) {
                   return;
                 }
-                console.log('onmousemove------resize')
+
                 if (config.resize.callback && typeof config.resize.callback.done === 'function') {
                   config.resize.callback.done(resizeInfo.done)
                 }

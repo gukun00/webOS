@@ -17,14 +17,14 @@
     v-x-drag="dragResizeConfig"
   >
     <!-- 拖拽缩放 -->
-    <div v-if="enableResizeHandler('top-left')" class="app-window-resize resize-top-left"></div>
-    <div v-if="enableResizeHandler('top-right')" class="app-window-resize resize-top-right"></div>
-    <div v-if="enableResizeHandler('bottom-left')" class="app-window-resize resize-bottom-left"></div>
-    <div v-if="enableResizeHandler('bottom-right')" class="app-window-resize resize-bottom-right"></div>
-    <div v-if="enableResizeHandler('top-border')" class="app-window-resize resize-top-border"></div>
-    <div v-if="enableResizeHandler('right-border')" class="app-window-resize resize-right-border"></div>
-    <div v-if="enableResizeHandler('bottom-border')" class="app-window-resize resize-bottom-border"></div>
-    <div v-if="enableResizeHandler('left-border')" class="app-window-resize resize-left-border"></div>
+    <div v-if="enableResizeHandler('top-left')" v-show="dragResizeConfig.resize.enable" class="app-window-resize resize-top-left"></div>
+    <div v-if="enableResizeHandler('top-right')" v-show="dragResizeConfig.resize.enable" class="app-window-resize resize-top-right"></div>
+    <div v-if="enableResizeHandler('bottom-left')" v-show="dragResizeConfig.resize.enable" class="app-window-resize resize-bottom-left"></div>
+    <div v-if="enableResizeHandler('bottom-right')" v-show="dragResizeConfig.resize.enable" class="app-window-resize resize-bottom-right"></div>
+    <div v-if="enableResizeHandler('top-border')" v-show="dragResizeConfig.resize.enable" class="app-window-resize resize-top-border"></div>
+    <div v-if="enableResizeHandler('right-border')" v-show="dragResizeConfig.resize.enable" class="app-window-resize resize-right-border"></div>
+    <div v-if="enableResizeHandler('bottom-border')" v-show="dragResizeConfig.resize.enable" class="app-window-resize resize-bottom-border"></div>
+    <div v-if="enableResizeHandler('left-border')" v-show="dragResizeConfig.resize.enable" class="app-window-resize resize-left-border"></div>
     <WallpaperBackground></WallpaperBackground>
     <div class="app-window-header" :class="{'header-show':isHeadShow}">
       <!--
@@ -326,7 +326,7 @@ export default {
       let flag = false;
       if (
         this.dragResizeConfig &&
-        this.dragResizeConfig.resize.enable &&
+        //this.dragResizeConfig.resize.enable &&
         this.dragResizeConfig.resize.handler
       ) {
         flag = !!this.dragResizeConfig.resize.handler[direction];
@@ -427,6 +427,7 @@ export default {
     },
     // 拖拽完成回调
     handleDragResizeDone: function(style) {
+      console.log(style)
       // 分发mutations，更新窗口样式
       let bodyWidth = document.body.clientWidth;
       let bodyHeight = document.body.clientHeight - 40;
@@ -508,6 +509,8 @@ export default {
         ...style,
         ...splitScreenStyle
       };
+
+      console.log(this.info.window,"this.info.window")
 
       this.$store.commit("updateOneWindowStyle", {
         info: this.info,
