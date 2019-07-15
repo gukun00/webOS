@@ -1,8 +1,73 @@
-/**
-* Created by Sciyon on 2018/4/24.
-*
-* 公共卸载界面
-*/
+/*
+ * @Author: guk 
+ * @Date: 2019-07-15 11:30:37 
+ * @Last Modified by: guk
+ * @Last Modified time: 2019-07-15 16:17:40
+ * 卸载APP界面
+ */
+
+<template>
+  <div class="app-block">
+    <div class="block-header">
+        <div class="title">{{ info.appTitle || info.config.app.title }}</div>
+    </div>
+    <div class="block-body" v-loading="isLoading">
+      <div class="logo">
+        <img :src="info.config.app.icon" :alt="info.appTitle || info.config.app.title">
+      </div>
+      <div
+        :class="{ 'complete': true, 'complete-success': isSuccess, 'complete-fail': !isSuccess }"
+        v-show="isComplete"
+      >
+        <!-- <Icon :type="isSuccess ? 'checkmark-circled' : 'close-circled'"></Icon> -->
+        {{ completeMsg }}
+      </div>
+      <el-button class="button" type="primary" :disabled="isSuccess" v-show="!isLoading" @click="handleUninstall">立即卸载</el-button>
+    </div>
+  </div>
+</template>
+
+<script>
+  export default {
+    name: 'Uninstall',
+    props: {
+      info: {
+        type: Object
+      }
+    },
+    data () {
+      return {
+        // 是否加载中
+        isLoading: false,
+        // 是否完成
+        isComplete: false,
+        // 是否成功
+        isSuccess: false,
+        // 完成提示信息
+        completeMsg: ''
+      }
+    },
+    methods: {
+      handleUninstall: function () {
+        let _t = this
+        _t.isLoading = true
+        // 广播事件 触发window事件 open
+        _t.$utils.bus.$emit('platform/application/uninstall', {
+          action: 'doUninstall',
+          data: {
+            appInfo: _t.info,
+            callback: (isSuccess, msg) => {
+              _t.isLoading = false
+              _t.isComplete = true
+              _t.isSuccess = isSuccess
+              _t.completeMsg = msg || (isSuccess ? '卸载成功！' : '卸载失败！')
+            }
+          }
+        })
+      }
+    }
+  }
+</script>
 
 <style scoped lang="less" rel="stylesheet/less">
   .app-block {
@@ -68,72 +133,3 @@
     }
   }
 </style>
-
-<template>
-  <div class="app-block">
-    <div class="block-header">
-        <div class="title">{{ info.appTitle || info.config.app.title }}</div>
-    </div>
-    <div class="block-body">
-      <div class="logo">
-        <img :src="info.config.app.icon" :alt="info.appTitle || info.config.app.title">
-      </div>
-      <div class="loading" v-show="isLoading">
-        <Spin fix>
-          <Icon class="loading-icon" type="load-c" size=18></Icon>
-          <div class="loading-text">卸载中...</div>
-        </Spin>
-      </div>
-      <div
-        :class="{ 'complete': true, 'complete-success': isSuccess, 'complete-fail': !isSuccess }"
-        v-show="isComplete"
-      >
-        <Icon :type="isSuccess ? 'checkmark-circled' : 'close-circled'"></Icon>
-        {{ completeMsg }}
-      </div>
-      <Button class="button" type="primary" :disabled="isSuccess" v-show="!isLoading" @click="handleUninstall">立即卸载</Button>
-    </div>
-  </div>
-</template>
-
-<script>
-  export default {
-    name: 'Uninstall',
-    props: {
-      info: {
-        type: Object
-      }
-    },
-    data () {
-      return {
-        // 是否加载中
-        isLoading: false,
-        // 是否完成
-        isComplete: false,
-        // 是否成功
-        isSuccess: false,
-        // 完成提示信息
-        completeMsg: ''
-      }
-    },
-    methods: {
-      handleUninstall: function () {
-        let _t = this
-        _t.isLoading = true
-        // 广播事件 触发window事件 open
-        _t.$utils.bus.$emit('platform/application/uninstall', {
-          action: 'doUninstall',
-          data: {
-            appInfo: _t.info,
-            callback: (isSuccess, msg) => {
-              _t.isLoading = false
-              _t.isComplete = true
-              _t.isSuccess = isSuccess
-              _t.completeMsg = msg || (isSuccess ? '卸载成功！' : '卸载失败！')
-            }
-          }
-        })
-      }
-    }
-  }
-</script>

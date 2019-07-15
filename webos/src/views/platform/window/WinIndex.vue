@@ -2,7 +2,7 @@
  * @Author: guk 
  * @Date: 2019-07-10 17:44:46 
  * @Last Modified by: guk
- * @Last Modified time: 2019-07-13 15:45:09
+ * @Last Modified time: 2019-07-15 16:44:19
  * 
  */
 
@@ -143,7 +143,7 @@ import WallpaperBackground from "@/components/public/WallpaperBackground";
 
 import { handleResizeByWindowBar } from "../js/handleWindowSize";
 export default {
-  name: "Window",
+  name: "WinIndex",
   components: {
     WinIFrame,
     WinModal,
@@ -723,7 +723,6 @@ export default {
     .window-title {
       text-align: left;
       padding-left: 8px;
-      margin-left: 5px;
       cursor: default;
       color: #ffffff;
       background-color: #4646ab;
@@ -763,7 +762,6 @@ export default {
     z-index: 2000;
     /*overflow: auto;*/
     width: 100%;
-    padding: 0 5px 5px;
     /*background: #fff;*/
   }
 

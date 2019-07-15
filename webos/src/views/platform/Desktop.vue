@@ -2,7 +2,7 @@
  * @Author: guk 
  * @Date: 2019-07-08 10:45:24 
  * @Last Modified by: guk
- * @Last Modified time: 2019-07-13 14:04:34
+ * @Last Modified time: 2019-07-15 17:44:48
  * 这是桌面
  */
 
@@ -22,11 +22,8 @@
         :style="item.config.desktopIcon.style"
         v-on:icon-drag-down="setDragTarget"
       ></DesktopIcon>
-       <Window
-        v-for="(item, index) in openedWindowList"
-        :key="'window_' + index"
-        :info="item"
-      ></Window>
+      <WinIndex v-for="(item, index) in openedWindowList" :key="'window_' + index" :info="item"></WinIndex>
+      <InstallIndex v-if="installInfo != null" :info="installInfo"></InstallIndex>
       <Wallpaper switchType="win7" :style="{ 'z-index': 1000 }"></Wallpaper>
     </div>
     <slot></slot>
@@ -50,7 +47,8 @@ import TaskBar from "./taskbar/TaskBar";
 import StartMenu from "./taskbar/StartMenu";
 import TaskBarIconBox from "./taskbar/TaskBarIconBox";
 import TaskBarWidget from "./taskbar/TaskBarWidget";
-import Window from "./window/WinIndex"
+import WinIndex from "./window/WinIndex";
+import InstallIndex from "./window/InstallIndex";
 import * as osHelper from "./../../utils/osHelper";
 
 export default {
@@ -63,7 +61,8 @@ export default {
     TaskBarIconBox,
     StartMenu,
     TaskBarWidget,
-    Window
+    WinIndex,
+    InstallIndex
   },
   props: {},
   data() {
@@ -91,7 +90,9 @@ export default {
   computed: {
     ...mapState({
       appData: state => state.platform.appData,
-      desktopWindows : state=> state.winShow.desktopWindows,
+      desktopWindows: state => state.winShow.desktopWindows,
+      installInfo : state => state.winShow.installInfo,
+      userInfo: state => state.platform.userInfo
     }),
     appData_installed: function() {
       //过滤得到已经安装的app
@@ -105,9 +106,17 @@ export default {
       }
       return installed;
     },
-    openedWindowList : function(){
-        let windowArr = this.desktopWindows.filter(item => item.window.status === 'open')
-        return windowArr
+    openedWindowList: function() {
+      let windowArr = this.desktopWindows.filter(
+        item => item.window.status === "open"
+      );
+      return windowArr;
+    },
+    openedInstallWindowList: function() {
+      let windowArr = this.desktopWindows.filter(
+        item => item.window.status === "open"
+      );
+      return windowArr;
     }
   },
   methods: {
@@ -115,7 +124,7 @@ export default {
       let account = sessionStorage.getItem("user");
       let params = {
         account: account,
-        appCategory: 1
+        category: 1
       };
       this.$api.application.getApplicationListByUserId(params).then(res => {
         if (res.code === "OK") {
@@ -414,8 +423,12 @@ export default {
     }
   },
   created: function() {
+ 
     //获取appData
     this.getUserAppData();
+  },
+  mounted() {
+       console.log(this.userInfo,"this.userInfo")
   },
   beforeDestroy: function() {}
 };

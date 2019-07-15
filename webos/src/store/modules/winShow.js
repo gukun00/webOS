@@ -2,7 +2,7 @@
  * @Author: guk 
  * @Date: 2019-07-10 15:22:47 
  * @Last Modified by: guk
- * @Last Modified time: 2019-07-13 15:22:35
+ * @Last Modified time: 2019-07-15 17:18:34
  * 窗口
  */
 
@@ -10,9 +10,16 @@
 export default {
     state: {
         //appInfo,window(status,)
-        desktopWindows: []
+        desktopWindows: [],
+        installInfo : null
     },
     mutations: {
+        'updateInstallInfo' : (state, data) => {
+            state.installInfo = data
+        },
+        'closeInstallWin' : (state, data) => {
+            state.installInfo = null;
+        },
         'updateWindows': (state, data) => {
             state.desktopWindows = data
         },

@@ -2,7 +2,7 @@
  * @Author: guk 
  * @Date: 2019-07-10 17:47:41 
  * @Last Modified by: guk
- * @Last Modified time: 2019-07-12 17:59:50
+ * @Last Modified time: 2019-07-15 11:29:11
  * 内置应用程序
  */
 
@@ -52,9 +52,8 @@ export default {
   methods: {
     // 初始化
     init: function() {
-      let _t = this;
       // 加载应用
-      _t.loadApp();
+      this.loadApp();
     },
     // 加载应用
     loadApp: function() {
@@ -117,19 +116,12 @@ export default {
   watch: {
     info: function(newValue, oldValue) {
       if (newValue.id != oldValue.id) {
-        console.log("窗口信息更新---------");
-        console.log("newValue:", newValue, "oldValue:", oldValue);
-        let _t = this;
-        _t.init();
+        this.init();
       }
     }
   },
   created: function() {
-    let _t = this;
-    // 初始化窗口
-    console.log("初始化窗口--------");
-
-    _t.init();
+    this.init();
   }
 };
 </script>

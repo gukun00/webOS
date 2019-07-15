@@ -2,61 +2,63 @@
  * @Author: guk 
  * @Date: 2019-07-12 09:27:40 
  * @Last Modified by: guk
- * @Last Modified time: 2019-07-12 15:18:34
+ * @Last Modified time: 2019-07-15 17:05:22
  * 应用市场
  */
 
 <template>
-  <div class="main-page">
-    <div class="category-block">
-      <div class="category-header">应用分类</div>
-      <div class="category-body">
-        <div class="category-list">
-          <div
-            v-for="item in categoryList"
-            :class="{ 'list-item': true, 'active': currentCategory.id === item.id }"
-            :key="item.name"
-            @click.stop.prevent="handleCategoryTrigger(item)"
-          >
-            <!-- <Icon class="item-icon" :type="item.icon"></Icon> -->
-            <div class="item-title">{{ item.title }}</div>
+  <div>
+    <div class="main-page">
+      <div class="category-block">
+        <div class="category-header">应用分类</div>
+        <div class="category-body">
+          <div class="category-list">
+            <div
+              v-for="item in categoryList"
+              :class="{ 'list-item': true, 'active': currentCategory.id === item.id }"
+              :key="item.name"
+              @click.stop.prevent="handleCategoryTrigger(item)"
+            >
+              <!-- <Icon class="item-icon" :type="item.icon"></Icon> -->
+              <div class="item-title">{{ item.title }}</div>
+            </div>
           </div>
         </div>
       </div>
-    </div>
-    <div class="app-list-block">
-      <!-- FIXME 可以考虑分类下还存在子分类的情况 -->
-      <div class="list-header">
-        <div class="board-block">
-          <div
-            v-for="item in boardList"
-            :class="{ 'board-item': true, 'active': currentBoard.name === item.name }"
-            :key="item.name"
-            @click.stop.prevent="handleBoardTrigger(item)"
-          >
-            <Icon v-if="item.icon" class="item-icon" :type="item.icon"></Icon>
-            <div class="item-title">{{ item.title }}</div>
+      <div class="app-list-block">
+        <!-- FIXME 可以考虑分类下还存在子分类的情况 -->
+        <div class="list-header">
+          <div class="board-block">
+            <div
+              v-for="item in boardList"
+              :class="{ 'board-item': true, 'active': currentBoard.name === item.name }"
+              :key="item.name"
+              @click.stop.prevent="handleBoardTrigger(item)"
+            >
+              <Icon v-if="item.icon" class="item-icon" :type="item.icon"></Icon>
+              <div class="item-title">{{ item.title }}</div>
+            </div>
           </div>
         </div>
-      </div>
-      <div class="list-body">
-        <div class="list-item" v-for="item in applicationList" :key="item.name || item.appName">
-          <div class="item-logo">
-            <img :src="item.config.app.icon || appIcon" :alt="item.title || item.appTitle" />
+        <div class="list-body">
+          <div class="list-item" v-for="item in applicationList" :key="item.name || item.appName">
+            <div class="item-logo">
+              <img :src="item.config.app.icon || appIcon" :alt="item.title || item.appTitle" />
+            </div>
+            <div class="item-content">
+              <div class="item-title">{{ item.title || item.appTitle}}</div>
+              <div
+                class="item-description"
+                :title="item.description || item.appDescription"
+              >{{ item.description || item.appDescription }}</div>
+              <div
+                class="item-install"
+                @click.stop.prevent="handleAction(item, currentBoard.action.name)"
+              >{{ currentBoard.action.text }}</div>
+            </div>
           </div>
-          <div class="item-content">
-            <div class="item-title">{{ item.title || item.appTitle}}</div>
-            <div
-              class="item-description"
-              :title="item.description || item.appDescription"
-            >{{ item.description || item.appDescription }}</div>
-            <div
-              class="item-install"
-              @click.stop.prevent="handleAction(item, currentBoard.action.name)"
-            >{{ currentBoard.action.text }}</div>
-          </div>
+          <NoData :show="!applicationList.length">该分类下暂无应用！</NoData>
         </div>
-        <NoData :show="!applicationList.length">该分类下暂无应用！</NoData>
       </div>
     </div>
   </div>
@@ -66,10 +68,16 @@
 import { mapState } from "vuex";
 import { marketApi } from "../api";
 
+
 export default {
   name: "MainPage",
+  components: {
+
+  },
   data() {
     return {
+      installInfo: null,
+      unInstallInfo: null,
       // 分类列表
       categoryList: [],
       // 应用列表
@@ -108,16 +116,14 @@ export default {
   },
   methods: {
     init: async function() {
-      let _t = this;
-      _t.currentBoard = _t.boardList[0];
+      this.currentBoard = this.boardList[0];
       // 获取应用分类列表
-      await _t.getCategoryList();
+      await this.getCategoryList();
       // 依据当前激活的分类获取应用列表
-      _t.getApplicationList();
+      this.getApplicationList();
     },
     // 获取应用分类列表
     getCategoryList: async function(parent) {
-      let _t = this;
       // 父分类ID，默认查询父节点为0的一级分类
       parent = parent || 0;
       // 分发action，调接口
@@ -129,35 +135,28 @@ export default {
       });
 
       if (!res) {
-        _t.$message.error("查询应用分类列表失败！");
+        this.$message.error("查询应用分类列表失败！");
         return;
       } else if (res.code !== "OK") {
         return;
       }
-      // 处理返回数据
-      // if (res.data.count && res.data.list && res.data.list.length) {
-      //   _t.$Message.success(res.msg || '查询应用分类列表成功！')
-      // } else {
-      //   _t.$Message.info('暂无数据！')
-      // }
       // 更新应用分类列表数据
-      _t.categoryList = res.data.list || [];
+      this.categoryList = res.data.list || [];
       // 更新当前分类信息
-      _t.currentCategory = _t.categoryList[0];
+      this.currentCategory = this.categoryList[0];
     },
     // 依据当前激活的分类获取应用列表
     getApplicationList: async function() {
-      let _t = this;
       let path = "";
       let payload = {};
 
       let res = null;
       payload = {
-        category: _t.currentCategory ? _t.currentCategory.id : "",
+        category: this.currentCategory ? this.currentCategory.id : "",
         account: this.userInfo.account
       };
       // 获取当前board下的应用列表
-      switch (_t.currentBoard.name) {
+      switch (this.currentBoard.name) {
         case "treasury":
           res = await marketApi.getApplicationList(payload);
           break;
@@ -168,11 +167,8 @@ export default {
           break;
       }
 
-      console.log(res)
-      // 分发action，调接口
-
       if (!res) {
-        _t.$message.error("查询应用列表失败！");
+        this.$message.error("查询应用列表失败！");
         return;
       } else if (res.code !== "OK") {
         return;
@@ -181,88 +177,55 @@ export default {
       if (res.data.count && res.data.list && res.data.list.length) {
         //_t.$message.success(res.msg || "查询应用列表成功！");
       } else {
-         _t.$message.info('暂无数据！')
+        //this.$message.info('暂无数据！')
       }
       // 更新应用列表数据
       let applicationList = res.data.list || [];
-      _t.applicationList = applicationList.map(item => {
+      this.applicationList = applicationList.map(item => {
         item.config = JSON.parse(item.config);
         return item;
       });
     },
     // 处理分类点击事件
     handleCategoryTrigger: function(item) {
-      let _t = this;
-      _t.currentCategory = item;
+      this.currentCategory = item;
       // 获取当前分类下的应用列表
-      _t.getApplicationList();
+      this.getApplicationList();
     },
     // 处理应用安装/卸载
     handleAction: function(appInfo, action) {
       let _t = this;
       // 处理安装
-      let handleInstall = function() {
+      let handleInstall = () => {
+        let installed = false;
+        this.appData.forEach(element => {
+          if (element.appId == appInfo.appId) {
+            //表示已经安装过啦
+            installed = true;
+          }
+        });
+
         // 安装信息
         let installInfo = {};
-        let iconList = [..._t.appData.iconList];
-        // 查找单个索引
-        let findAppIndex = function(iconList, condition) {
-          return iconList.findIndex(item => {
-            return condition(item);
-          });
+        installInfo = {
+          // 解构应用基础配置
+          ...appInfo,
+          // 应用ID
+          appID: appInfo.id,
+          // 赋值当前操作为 install
+          action: "install",
+          // 是否已安装过
+          installed: installed
         };
-        let currentAppIndex = findAppIndex(
-          iconList,
-          item => item.config.app.name === appInfo.config.app.name
-        );
-        if (currentAppIndex < 0) {
-          installInfo = {
-            // 解构应用基础配置
-            ...appInfo,
-            config: {
-              ...appInfo.config,
-              // 解构应用安装配置
-              ...appInfo.config.install
-            },
-            // 应用ID
-            appID: appInfo.id,
-            // 赋值当前操作为 install
-            action: "install",
-            // 是否已安装过
-            installed: false
-          };
-        } else {
-          let currentApp = iconList[currentAppIndex];
-          installInfo = {
-            // 解构应用基础配置
-            ...currentApp,
-            config: {
-              ...currentApp.config,
-              // 解构应用安装配置
-              ...appInfo.config.install
-            },
-            // 应用ID
-            appID: appInfo.id,
-            // 赋值当前操作为 install
-            action: "install",
-            // 是否已安装过
-            installed: true
-          };
-        }
-        // 调用安装工具，打开安装界面
-        _t.$utils.install(_t, installInfo);
+        //打开安装界面
+        this.installInfo = installInfo;
       };
       // 处理卸载
-      let handleUninstall = function() {
+      let handleUninstall = () => {
         // 调用卸载工具，打开卸载界面
         _t.$utils.uninstall(_t, {
           // 解构应用基础配置
           ...appInfo,
-          config: {
-            ...appInfo.config,
-            // 解构应用卸载配置
-            ...appInfo.config.uninstall
-          },
           // 赋值当前操作为 uninstall
           action: "uninstall",
           // 是否已安装过
@@ -277,18 +240,19 @@ export default {
           handleUninstall();
           break;
       }
+      
+      this.$store.commit("updateInstallInfo", this.installInfo);
+
     },
     // 处理board点击事件
     handleBoardTrigger: function(item) {
-      let _t = this;
-      _t.currentBoard = item;
+      this.currentBoard = item;
       // 获取当前分类下的应用列表
-      _t.getApplicationList();
+      this.getApplicationList();
     }
   },
   created: function() {
-    let _t = this;
-    _t.init();
+    this.init();
   }
 };
 </script>
@@ -481,4 +445,5 @@ export default {
     }
   }
 }
+
 </style>
