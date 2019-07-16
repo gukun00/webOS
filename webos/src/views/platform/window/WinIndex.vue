@@ -2,7 +2,7 @@
  * @Author: guk 
  * @Date: 2019-07-10 17:44:46 
  * @Last Modified by: guk
- * @Last Modified time: 2019-07-15 16:44:19
+ * @Last Modified time: 2019-07-16 20:47:04
  * 
  */
 
@@ -787,7 +787,6 @@ export default {
     width: 100%;
     height: 30px;
     text-align: right;
-    padding: 0 15px;
     line-height: 30px;
     color: #ffffff;
     background-color: rgba(0, 0, 0, 0.6);
@@ -795,9 +794,10 @@ export default {
 
     .window-bar-item {
       display: inline-block;
-      width: 20px;
-      height: 20px;
-      text-align: center;
+      width: 15px;
+      height: 30px;
+      margin-right: 10px;
+      text-align: left;
       vertical-align: top;
       color: #ffffff;
 

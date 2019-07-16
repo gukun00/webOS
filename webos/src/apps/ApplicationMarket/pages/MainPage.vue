@@ -2,7 +2,7 @@
  * @Author: guk 
  * @Date: 2019-07-12 09:27:40 
  * @Last Modified by: guk
- * @Last Modified time: 2019-07-15 17:05:22
+ * @Last Modified time: 2019-07-16 19:51:38
  * 应用市场
  */
 
@@ -41,7 +41,7 @@
           </div>
         </div>
         <div class="list-body">
-          <div class="list-item" v-for="item in applicationList" :key="item.name || item.appName">
+          <div class="list-item" v-for="item in showAppliactions" :key="item.name || item.appName">
             <div class="item-logo">
               <img :src="item.config.app.icon || appIcon" :alt="item.title || item.appTitle" />
             </div>
@@ -57,7 +57,7 @@
               >{{ currentBoard.action.text }}</div>
             </div>
           </div>
-          <NoData :show="!applicationList.length">该分类下暂无应用！</NoData>
+          <NoData :show="!showAppliactions.length">该分类下暂无应用！</NoData>
         </div>
       </div>
     </div>
@@ -68,12 +68,9 @@
 import { mapState } from "vuex";
 import { marketApi } from "../api";
 
-
 export default {
   name: "MainPage",
-  components: {
-
-  },
+  components: {},
   data() {
     return {
       installInfo: null,
@@ -82,6 +79,7 @@ export default {
       categoryList: [],
       // 应用列表
       applicationList: [],
+      //applicationList_installed: [],
       // 当前激活的分类
       currentCategory: null,
       boardList: [
@@ -112,7 +110,29 @@ export default {
     ...mapState({
       userInfo: state => state.platform.userInfo,
       appData: state => state.platform.appData
-    })
+    }),
+    applicationList_installed: function() {
+      let userApps = [];
+      this.appData.map(item => {
+        if (
+          item.appCategory === this.currentCategory.id ||
+          this.currentCategory.id === 1
+        ) {
+          userApps.push(item);
+        }
+      });
+
+      return userApps;
+    },
+    showAppliactions: function() {
+      console.log(this.currentBoard.name);
+      switch (this.currentBoard.name) {
+        case "treasury":
+          return this.applicationWithCategroy();
+        case "uninstall":
+          return this.applicationList_installed;
+      }
+    }
   },
   methods: {
     init: async function() {
@@ -152,21 +172,11 @@ export default {
 
       let res = null;
       payload = {
-        category: this.currentCategory ? this.currentCategory.id : "",
+        category: this.currentCategory ? this.currentCategory.id : 1,
         account: this.userInfo.account
       };
-      // 获取当前board下的应用列表
-      switch (this.currentBoard.name) {
-        case "treasury":
-          res = await marketApi.getApplicationList(payload);
-          break;
-        case "uninstall":
-          // 获取用户应用数据(卸载使用)
-          res = await this.$api.application.getApplicationListByUserId(payload);
-          //path = _t.$utils.store.getType('Admin/user/application/list', 'Platform')
-          break;
-      }
 
+      res = await marketApi.getApplicationList(payload);
       if (!res) {
         this.$message.error("查询应用列表失败！");
         return;
@@ -181,16 +191,17 @@ export default {
       }
       // 更新应用列表数据
       let applicationList = res.data.list || [];
-      this.applicationList = applicationList.map(item => {
+      applicationList.map(item => {
         item.config = JSON.parse(item.config);
-        return item;
       });
+
+      this.applicationList = applicationList;
     },
     // 处理分类点击事件
     handleCategoryTrigger: function(item) {
       this.currentCategory = item;
       // 获取当前分类下的应用列表
-      this.getApplicationList();
+      //this.getApplicationList();
     },
     // 处理应用安装/卸载
     handleAction: function(appInfo, action) {
@@ -210,8 +221,6 @@ export default {
         installInfo = {
           // 解构应用基础配置
           ...appInfo,
-          // 应用ID
-          appID: appInfo.id,
           // 赋值当前操作为 install
           action: "install",
           // 是否已安装过
@@ -223,14 +232,17 @@ export default {
       // 处理卸载
       let handleUninstall = () => {
         // 调用卸载工具，打开卸载界面
-        _t.$utils.uninstall(_t, {
+        let installInfo = {};
+        installInfo = {
           // 解构应用基础配置
           ...appInfo,
           // 赋值当前操作为 uninstall
           action: "uninstall",
           // 是否已安装过
           installed: true
-        });
+        };
+        //打开安装界面
+        this.installInfo = installInfo;
       };
       switch (action) {
         case "install":
@@ -240,15 +252,29 @@ export default {
           handleUninstall();
           break;
       }
-      
-      this.$store.commit("updateInstallInfo", this.installInfo);
 
+      this.$store.commit("updateInstallInfo", this.installInfo);
+    },
+    applicationWithCategroy: function() {
+      let temp = [];
+      if (this.applicationList) {
+        this.applicationList.map(item => {
+          if (
+            item.category === this.currentCategory.id ||
+            this.currentCategory.id === 1
+          ) {
+            temp.push(item);
+          }
+        });
+      }
+
+      return temp;
     },
     // 处理board点击事件
     handleBoardTrigger: function(item) {
       this.currentBoard = item;
       // 获取当前分类下的应用列表
-      this.getApplicationList();
+      //this.getApplicationList();
     }
   },
   created: function() {
@@ -445,5 +471,4 @@ export default {
     }
   }
 }
-
 </style>

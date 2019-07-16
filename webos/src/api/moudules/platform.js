@@ -2,16 +2,25 @@ import axios from '../../utils/axios'
 import config from '../../utils/config';
 
 /* 
- * 系统登录模块
+ * app安装卸载
  */
 
-// 登录
+// 安装
 export const doInstall = data => {
-    console.log(data,"123123123")
     return axios({
         url: config.baseUrl + '/api/Platform/user/application/install',
         method: 'post',
         data
     })
 }
+
+// 卸载
+export const doUnInstall = data => {
+    return axios({
+        url: config.baseUrl + '/api/Platform/user/application/uninstall',
+        method: 'post',
+        data
+    })
+}
+
 

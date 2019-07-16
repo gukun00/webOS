@@ -107,13 +107,13 @@ export default {
             this.$Cookies.set("token", res.data.token); // 放置token到Cookie
             sessionStorage.setItem("user", userInfo.account); // 保存用户到本地会话
 
-            this.$store.commit(
-              "setUserInfo",
-              {
-                ...userInfo,
-                isLogin: true
-              }
-            );
+            // this.$store.commit(
+            //   "setUserInfo",
+            //   {
+            //     account : account,
+            //     isLogin: true
+            //   }
+            // );
 
             //this.$store.commit("menuRouteLoaded", false); // 要求重新加载导航菜单
             this.$router.push({ name: "首页" }); // 登录成功，跳转到主页

@@ -1,7 +1,7 @@
 export default {
   state: {
     appData: [],
-    userInfo : {}
+    userInfo: {}
   },
   mutations: {
     updateAppData: (state, data) => {
@@ -13,7 +13,7 @@ export default {
     updateOneAppStyle: (state, data) => {
       data.info.config.style = data.style;
     },
-    setUserInfo : (state,data) => {
+    setUserInfo: (state, data) => {
       state.userInfo = data
     }
   }

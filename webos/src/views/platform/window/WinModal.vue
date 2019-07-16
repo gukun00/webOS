@@ -2,7 +2,7 @@
  * @Author: guk 
  * @Date: 2019-07-10 17:47:41 
  * @Last Modified by: guk
- * @Last Modified time: 2019-07-15 11:29:11
+ * @Last Modified time: 2019-07-16 20:03:46
  * 内置应用程序
  */
 
@@ -68,8 +68,6 @@ export default {
         // 动态加载组件
         require.ensure([], require => {
           let isSuccess = false;
-          console.log(_t.appInfo, path, "--------------------------------");
-
           //安装或者卸载
           var modelType;
           // TODO 后面对结构体进行改良
@@ -79,21 +77,11 @@ export default {
           } else {
             try {
               let appComponent = () => import("@/apps/" + path + "/Index.vue");
-              console.log("@/apps/" + path + "/Index.vue");
               _t.appComponent = appComponent;
-              console.log("appComponent", appComponent);
               isSuccess = true;
             } catch (err) {
-              isSuccess = false;
-              console.warn(
-                "WARNG:: LOAD",
-                "@/apps/" + path + "/Index.vue",
-                "FAIL!"
-              );
             }
           }
-
-    
           // 更新加载状态
           _t.loadStatus = isSuccess ? "success" : "fail";
         });

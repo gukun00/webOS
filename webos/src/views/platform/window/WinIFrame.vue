@@ -1,27 +1,22 @@
 /*
  * @Author: guk 
  * @Date: 2019-07-10 17:48:22 
- * @Last Modified by:   guk 
- * @Last Modified time: 2019-07-10 17:48:22 
+ * @Last Modified by: guk
+ * @Last Modified time: 2019-07-16 20:07:30
  * IFRAME类型的窗口
  */
 
 
 <template>
-  <div class="app-window-iframe">
-    <div class="loading" v-show="loadStatus === 'loading'">
-      <Spin fix>
-        <Icon class="loading-icon" type="load-c" size=18></Icon>
-        <div class="loading-text">加载中...</div>
-      </Spin>
+  <div class="app-window-iframe"  v-loading="loadStatus === 'loading'">
+    <div class="loading">
     </div>
     <div
       v-show="loadStatus === 'fail'"
       :class="{ 'load-complete': true, 'load-fail': loadStatus === 'fail' }"
     >
-      <Icon type="close-circled"></Icon>
       <div class="load-text">加载应用程序</div>
-      <div class="load-text load-text-strong">{{ info.appTitle || info.config.app.title }}</div>
+      <div class="load-text load-text-strong">{{ info.appInfo.appTitle || info.appInfo.config.app.title }}</div>
       <div class="load-text">失败！</div>
     </div>
     <iframe
@@ -80,10 +75,10 @@
         _t.$nextTick(function () {
           _t.appWidth = _t.$el ? parseInt(_t.$el.offsetWidth) : '100%'
           _t.appHeight = _t.$el ? parseInt(_t.$el.offsetHeight) : '100%'
-          if(_t.info.config.app.url.indexOf("#")>-1){
-            _t.appPath = _t.info.config.app.url
+          if(_t.info.appInfo.config.app.url.indexOf("#")>-1){
+            _t.appPath = _t.info.appInfo.config.app.url
           }else{
-            _t.appPath = _t.info.config.app.url + "#"
+            _t.appPath = _t.info.appInfo.config.app.url + "#"
           }
          
           console.log(_t.appPath + "-----------------iframe加载！");

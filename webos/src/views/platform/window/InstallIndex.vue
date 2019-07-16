@@ -2,7 +2,7 @@
  * @Author: guk 
  * @Date: 2019-07-10 17:44:46 
  * @Last Modified by: guk
- * @Last Modified time: 2019-07-15 17:19:27
+ * @Last Modified time: 2019-07-16 16:12:33
  * 
  */
 
@@ -28,8 +28,8 @@
       </div>
     </div>
     <div class="app-window-body">
-      <Install :info="info"></Install>
-      <UnInstall :info="info"></UnInstall>
+      <Install v-if="info.action === 'install'" :info="info"></Install>
+      <UnInstall v-if="info.action === 'uninstall'" :info="info"></UnInstall>
     </div>
   </div>
 </template>
@@ -39,6 +39,7 @@ import { mapState } from "vuex";
 import WallpaperBackground from "@/components/public/WallpaperBackground";
 import Install from "@/global/components/Install";
 import UnInstall from "@/global/components/Uninstall";
+
 export default {
   name: "InstallIndex",
   components: {

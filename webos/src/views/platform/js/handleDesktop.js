@@ -198,3 +198,4 @@ export function handleGridLayout(){
     }
     this.gridArr = gridArr;
 }
+

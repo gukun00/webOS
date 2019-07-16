@@ -2,7 +2,7 @@
  * @Author: guk 
  * @Date: 2019-07-08 10:45:24 
  * @Last Modified by: guk
- * @Last Modified time: 2019-07-15 17:44:48
+ * @Last Modified time: 2019-07-16 15:59:43
  * 这是桌面
  */
 
@@ -50,7 +50,8 @@ import TaskBarWidget from "./taskbar/TaskBarWidget";
 import WinIndex from "./window/WinIndex";
 import InstallIndex from "./window/InstallIndex";
 import * as osHelper from "./../../utils/osHelper";
-
+//总线， 可以传递刷新方法等
+import { EventBus } from "./js/event-bus.js";
 export default {
   name: "Desktop",
   components: {
@@ -91,7 +92,7 @@ export default {
     ...mapState({
       appData: state => state.platform.appData,
       desktopWindows: state => state.winShow.desktopWindows,
-      installInfo : state => state.winShow.installInfo,
+      installInfo: state => state.winShow.installInfo,
       userInfo: state => state.platform.userInfo
     }),
     appData_installed: function() {
@@ -134,8 +135,11 @@ export default {
             element.action = "installed";
           });
 
-          this.handleGridLayout();
-          console.log("getUserAppData", res.data.list.length);
+          this.$store.commit("setUserInfo", {
+            account: account,
+            isLogin: true
+          });
+
           let sortedApData = this.handleIconList(res.data.list);
           this.$store.commit("updateAppData", sortedApData);
         } else {
@@ -368,7 +372,11 @@ export default {
             text: "刷新",
             enable: true,
             action: {
-              handler: "platform/refresh"
+              handler: () => {
+                this.handleGridLayout();
+                //获取appData
+                this.getUserAppData();
+              }
             }
           },
           {
@@ -423,12 +431,23 @@ export default {
     }
   },
   created: function() {
- 
+    this.handleGridLayout();
     //获取appData
     this.getUserAppData();
   },
   mounted() {
-       console.log(this.userInfo,"this.userInfo")
+    // this.nextTick(() => {
+    //   //计算格子
+    //   this.handleGridLayout();
+    // });
+    EventBus.$on("refresh", () => {
+      this.$nextTick(() => {
+        this.handleGridLayout();
+        //获取appData
+        this.getUserAppData();
+      });
+    });
+    console.log(this.userInfo, "this.userInfo");
   },
   beforeDestroy: function() {}
 };

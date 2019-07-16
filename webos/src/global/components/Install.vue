@@ -2,7 +2,7 @@
  * @Author: guk 
  * @Date: 2019-07-15 11:30:21 
  * @Last Modified by: guk
- * @Last Modified time: 2019-07-15 17:30:48
+ * @Last Modified time: 2019-07-16 16:41:50
  * 安装APP界面
  */
 
@@ -35,7 +35,8 @@
 
 <script>
 import { mapState } from "vuex";
-
+//总线， 可以传递刷新方法等
+import { EventBus } from "@/views/platform/js/event-bus.js";
 export default {
   name: "Install",
   props: {
@@ -64,22 +65,19 @@ export default {
     handleInstall: function() {
       this.$api.platform
         .doInstall({
-          id: this.info.appID,
+          id: this.info.appId,
           account: this.userInfo.account
         })
         .then(res => {
-          console.log("doApplicationInstall", res);
           if (!res || res.code !== "OK") {
-            // _t.$Message.error('安装失败！')
-            callback && callback(false);
+            this.$message.error("安装失败！" + res.msg);
             return;
           }
-          _t.$message.info(res.msg || "安装成功！");
-          callback && callback(true, res.msg);
-          _t.$nextTick(function() {
-            // 刷新用户应用列表
-            //_t.$utils.bus.$emit("Admin/appData/refresh");
-          });
+          this.$message.info(res.msg || "安装成功！");
+          // 刷新用户应用列表
+          EventBus.$emit("refresh");
+          //关闭
+          this.$store.commit("closeInstallWin");
         });
     }
   }

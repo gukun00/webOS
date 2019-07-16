@@ -30,6 +30,7 @@ Vue.use(ElementUI, { size: 'small', zIndex: 3000 });
 Vue.use(ElementUI)
 Vue.use(api)
 
+
 Vue.prototype.$message({
   duration: 3
 })
