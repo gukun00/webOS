@@ -2,7 +2,7 @@
  * @Author: guk 
  * @Date: 2019-07-10 17:44:46 
  * @Last Modified by: guk
- * @Last Modified time: 2019-07-16 20:47:04
+ * @Last Modified time: 2019-07-17 11:13:58
  * 
  */
 
@@ -11,9 +11,8 @@
   <div
     class="app-window"
     :class="windowSizeClass"
-    @mousedown.stop="onWindowMouseDown"
+    @mousedown="onWindowMouseDown"
     :window-name="info.appInfo.appName || info.appInfo.config.app.name"
-    :style="info.window.style"
     v-x-drag="dragResizeConfig"
   >
     <!-- 拖拽缩放 -->
@@ -25,7 +24,7 @@
     <div v-if="enableResizeHandler('right-border')" v-show="dragResizeConfig.resize.enable" class="app-window-resize resize-right-border"></div>
     <div v-if="enableResizeHandler('bottom-border')" v-show="dragResizeConfig.resize.enable" class="app-window-resize resize-bottom-border"></div>
     <div v-if="enableResizeHandler('left-border')" v-show="dragResizeConfig.resize.enable" class="app-window-resize resize-left-border"></div>
-    <WallpaperBackground></WallpaperBackground>
+    <!-- <WallpaperBackground></WallpaperBackground> -->
     <div class="app-window-header" :class="{'header-show':isHeadShow}">
       <!--
       // FIXME 测试header自定义功能
@@ -355,16 +354,8 @@ export default {
       );
     },
     onWindowMouseDown: function() {
-      // 广播事件 触发window事件
-      // let appInfo = { ...this.appInfo };
-      // console.log(this.appInfo);
-      // this.$utils.bus.$emit("platform/window/trigger", {
-      //   // 通过窗口控制按钮缩放窗口
-      //   action: "zIndexChangeByWindow",
-      //   data: {
-      //     appInfo: appInfo
-      //   }
-      // });
+      //调整窗口位置
+      this.$store.commit("setToFront",this.info)
     },
     // 拖拽中回调
     handleDragMove: function(style, mousePosition, range) {
@@ -581,7 +572,6 @@ export default {
   /*border: 1px solid #fff;*/
   box-shadow: 0px 0px 2px 2px rgba(0, 0, 0, 0.1);
   writing-mode: horizontal-tb;
-  transition: all 0.3s ease-out;
   z-index: 2000;
 
   &.app-window-small {

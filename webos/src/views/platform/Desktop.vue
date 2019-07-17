@@ -2,7 +2,7 @@
  * @Author: guk 
  * @Date: 2019-07-08 10:45:24 
  * @Last Modified by: guk
- * @Last Modified time: 2019-07-16 15:59:43
+ * @Last Modified time: 2019-07-17 10:52:52
  * 这是桌面
  */
 
@@ -22,7 +22,7 @@
         :style="item.config.desktopIcon.style"
         v-on:icon-drag-down="setDragTarget"
       ></DesktopIcon>
-      <WinIndex v-for="(item, index) in openedWindowList" :key="'window_' + index" :info="item"></WinIndex>
+      <WinIndex v-for="(item, index) in openedWindowList" :key="item.window.key" :info="item" :style="item.window.style"></WinIndex>
       <InstallIndex v-if="installInfo != null" :info="installInfo"></InstallIndex>
       <Wallpaper switchType="win7" :style="{ 'z-index': 1000 }"></Wallpaper>
     </div>

@@ -102,11 +102,6 @@ export function handleResizeByWindowBar(data, callback) {
         case 'close':
             // 如果是安装/卸载窗口的关闭操作则从appData中移除
             tempWindow['status'] = 'close'
-            // tempWindow['size'] = appInfo.config.window.size;
-            // tempWindow['style'] = appInfo.config.window.style;
-            // tempWindow['oldStyle'] = appInfo.config.window.style;
-            // tempWindow['oldSize'] = appInfo.config.window.size;
-
             break
     }
 

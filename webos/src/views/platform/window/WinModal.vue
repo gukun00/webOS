@@ -2,7 +2,7 @@
  * @Author: guk 
  * @Date: 2019-07-10 17:47:41 
  * @Last Modified by: guk
- * @Last Modified time: 2019-07-16 20:03:46
+ * @Last Modified time: 2019-07-17 11:13:08
  * 内置应用程序
  */
 
@@ -86,7 +86,7 @@ export default {
           _t.loadStatus = isSuccess ? "success" : "fail";
         });
       };
-      console.log("loadApp _t.info", _t.appInfo);
+
       if (_t.appInfo.hasOwnProperty("action")) {
         if (_t.appInfo.action === "install") {
           path = appName + "/install";
@@ -123,24 +123,6 @@ export default {
   .loading {
     display: inline-block;
     margin-top: 10px;
-
-    .loading-icon {
-      animation: loading-spin 1s linear infinite;
-    }
-
-    @keyframes loading-spin {
-      from {
-        transform: rotate(0deg);
-      }
-
-      50% {
-        transform: rotate(180deg);
-      }
-
-      to {
-        transform: rotate(360deg);
-      }
-    }
   }
 
   .load-complete {

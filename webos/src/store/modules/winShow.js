@@ -2,7 +2,7 @@
  * @Author: guk 
  * @Date: 2019-07-10 15:22:47 
  * @Last Modified by: guk
- * @Last Modified time: 2019-07-15 17:18:34
+ * @Last Modified time: 2019-07-17 09:40:55
  * 窗口
  */
 
@@ -22,6 +22,20 @@ export default {
         },
         'updateWindows': (state, data) => {
             state.desktopWindows = data
+        },
+        'setToFront' :  (state, data) => {
+            let elements = [];
+            state.desktopWindows.forEach(element => {
+                console.log(element.key,data.key)
+                if (element.key === data.key) {
+                    element.window.style["z-index"] = "4000 !important";
+                }else{
+                    element.window.style["z-index"] = "2000 !important";
+                }
+                elements.push(element);
+            });
+
+            state.desktopWindows = elements;
         },
         'updateOneWindowStyle': (state, data) => {
             data.info.window.style = data.style 
